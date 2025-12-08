@@ -11,6 +11,9 @@ dependencies:
     sdk: flutter
   http: any
   shared_preferences: ^2.5.3
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
@@ -19,6 +22,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
+  generate: true
+  
   assets:
     - assets/icon_settings.json

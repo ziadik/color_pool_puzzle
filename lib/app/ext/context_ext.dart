@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/gen/app_localizations.dart';
 import '../di/di_container.dart';
 import '../di/depends.dart';
 
@@ -8,4 +9,5 @@ import '../di/depends.dart';
 extension ContextExt on BuildContext {
   // DiContainer get di => DiContainer.of(this); <- Удалить
   Depends get di => DiContainer.of(this).depends;
+  AppLocalizations get l10n => AppLocalizations.of(this);
 }

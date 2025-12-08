@@ -6,6 +6,7 @@ import 'features/leaderboard/presentation/leaderboard_screen.dart';
 import 'features/main_menu/main_menu_screen.dart';
 import 'features/user/presentation/user_screen.dart';
 import 'features/game/game_screen.dart';
+import 'l10n/gen/app_localizations.dart';
 
 part 'app/game_router.dart';
 
@@ -48,7 +49,7 @@ class AppError extends StatelessWidget {
   }
 }
 
-class _MyApp extends StatelessWidget {
+class _MyApp extends StatefulWidget {
   const _MyApp({required this.depends});
 
   /// Передаем зависимости в приложение
@@ -56,10 +57,50 @@ class _MyApp extends StatelessWidget {
   final Depends depends;
 
   @override
+  State<_MyApp> createState() => MyAppState();
+}
+
+class MyAppState extends State<_MyApp> {
+  Locale _locale = const Locale('ru');
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLocale();
+  }
+
+  Future<void> _loadLocale() async {
+    final storage = widget.depends.storageService;
+    final localeCode = storage.getString('locale') ?? 'ru';
+    setState(() {
+      _locale = Locale(localeCode);
+    });
+  }
+
+  void setLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+    _saveLocale(locale.languageCode);
+  }
+
+  Future<void> _saveLocale(String localeCode) async {
+    final storage = widget.depends.storageService;
+    await storage.setString('locale', localeCode);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return DiContainer(
-      depends: depends,
-      child: MaterialApp(debugShowCheckedModeBanner: false, initialRoute: GameRouter.initialRoute, routes: GameRouter._appRoutes),
+      depends: widget.depends,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        locale: _locale,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        initialRoute: GameRouter.initialRoute,
+        routes: GameRouter._appRoutes,
+      ),
     );
   }
 }
