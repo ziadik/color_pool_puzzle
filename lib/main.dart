@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'app/di/depends.dart';
 import 'app/di/di_container.dart';
+import 'app/utils/app_zone.dart';
+import 'app/utils/error_util.dart';
+import 'app/widget/app_error.dart';
+import 'features/init_app/data/initialization.dart';
 import 'features/leaderboard/presentation/leaderboard_screen.dart';
 import 'features/main_menu/main_menu_screen.dart';
 import 'features/user/presentation/user_screen.dart';
@@ -10,44 +14,38 @@ import 'l10n/gen/app_localizations.dart';
 
 part 'app/game_router.dart';
 
-void main() async {
-  // Инициализируем Flutter binding
-  WidgetsFlutterBinding.ensureInitialized();
+void main() => appZone(() async {
+  // Splash screen
+  final initializationProgress = ValueNotifier<({int progress, String message})>((progress: 0, message: ''));
+  /* runApp(SplashScreen(progress: initializationProgress)); */
+  $initializeApp(
+    onProgress: (progress, message) => initializationProgress.value = (progress: progress, message: message),
+    onSuccess: (depends) => runApp(_MyApp(depends: depends)),
+    onError: (error, stackTrace) {
+      runApp(AppError(error: error, stackTrace: stackTrace));
+      ErrorUtil.logError(error, stackTrace).ignore();
+    },
+  ).ignore();
+  // // Инициализируем Flutter binding
+  // WidgetsFlutterBinding.ensureInitialized();
 
-  // Создаем экземпляр класса Depends
-  final Depends depends = Depends();
-  try {
-    // Инициализируем зависимости
-    await depends.init();
-    // В случае успешной инициализации зависимостей
-    // запускаем приложение
-    // Передаем зависимости в контейнер зависимостей
-    runApp(_MyApp(depends: depends));
-  } on Object catch (error, stackTrace) {
-    // В случае ошибки при инициализации зависимостей
-    // запускаем приложение с экраном ошибки
-    runApp(AppError(error: error, stackTrace: stackTrace));
-  }
-}
+  // // Создаем экземпляр класса Depends
+  // final Depends depends = Depends();
+  // try {
+  //   // Инициализируем зависимости
+  //   await depends.init();
+  //   // В случае успешной инициализации зависимостей
+  //   // запускаем приложение
+  //   // Передаем зависимости в контейнер зависимостей
+  //   runApp(_MyApp(depends: depends));
+  // } on Object catch (error, stackTrace) {
+  //   // В случае ошибки при инициализации зависимостей
+  //   // запускаем приложение с экраном ошибки
+  //   runApp(AppError(error: error, stackTrace: stackTrace));
+  // }
+});
 
 /// Экран ошибки приложения
-class AppError extends StatelessWidget {
-  const AppError({super.key, required this.error, required this.stackTrace});
-
-  final Object error;
-  final StackTrace stackTrace;
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [const Text('Произошла ошибка:'), Text(error.toString()), Text(stackTrace.toString())]),
-        ),
-      ),
-    );
-  }
-}
 
 class _MyApp extends StatefulWidget {
   const _MyApp({required this.depends});
