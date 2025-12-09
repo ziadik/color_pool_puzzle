@@ -112,6 +112,7 @@ class MyAppState extends State<_MyApp> {
   Widget build(BuildContext context) {
     return DiContainer(
       depends: widget.depends,
+
       child: MaterialApp(
         theme: _theme,
         debugShowCheckedModeBanner: false,
