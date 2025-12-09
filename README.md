@@ -48,96 +48,95 @@ A modern Flutter puzzle game built with Clean Architecture, featuring color-base
 ## 📂 Детальная структура
 
 ### **`lib/`** - Корневая директория приложения
-lib/
-├── app/ # 🏛️ Ядро приложения (общие компоненты)
-│ ├── di/ # 💉 Dependency Injection
-│ │ ├── di_container.dart # Контейнер зависимостей
-│ │ └── depends.dart # Регистрация зависимостей
-│ │
-│ ├── http/ # 🌐 Сетевой слой
-│ │ ├── i_http_client.dart # Интерфейс HTTP-клиента
-│ │ └── base_http_client.dart # Базовая реализация
-│ │
-│ ├── storage/ # 💾 Локальное хранилище
-│ │ ├── i_storage_service.dart
-│ │ └── storage_service.dart
-│ │
-│ ├── theme/ # 🎨 Тема приложения
-│ │ └── app_theme.dart # Конфигурация тем
-│ │
-│ ├── utils/ # 🛠️ Утилиты
-│ │ ├── logger.dart # Кастомный логгер
-│ │ ├── error_util.dart # Обработка ошибок
-│ │ └── app_zone.dart # Зоны выполнения
-│ │
-│ ├── ext/ # 🔧 Расширения
-│ │ └── context_ext.dart # Расширения BuildContext
-│ │
-│ ├── widget/ # 🧩 Переиспользуемые виджеты
-│ │ └── app_error.dart # Виджет ошибки
-│ │
-│ ├── equals_mixin.dart # 🔁 Миксин для сравнения объектов
-│ └── game_router.dart # 🧭 Навигация
-│
-├── features/ # 🚀 Фичи приложения (по модулям)
-│ │
-│ ├── user/ # 👤 Пользовательская система
-│ │ ├── data/ # 📊 Data Layer
-│ │ │ ├── user_dto.dart # Data Transfer Object
-│ │ │ └── user_repository.dart # Реализация репозитория
-│ │ │
-│ │ ├── domain/ # 🧠 Domain Layer
-│ │ │ ├── user_entity.dart # Сущность пользователя
-│ │ │ ├── i_user_repository.dart # Интерфейс репозитория
-│ │ │ └── state/ # 🎛️ Управление состоянием
-│ │ │ ├── user_cubit.dart # Cubit для пользователя
-│ │ │ └── user_state.dart # Состояния пользователя
-│ │ │
-│ │ └── presentation/ # 🎨 Presentation Layer
-│ │ ├── user_screen.dart # Основной экран
-│ │ └── components/ # 🧱 UI компоненты
-│ │ ├── username_field.dart # Поле ввода имени
-│ │ ├── user_created.dart # Виджет успеха
-│ │ └── user_error.dart # Виджет ошибки
-│ │
-│ ├── leaderboard/ # 🏆 Таблица лидеров
-│ │ ├── data/ # 📊 Data Layer
-│ │ │ ├── leaderboard_dto.dart
-│ │ │ └── leaderboard_repository.dart
-│ │ │
-│ │ ├── domain/ # 🧠 Domain Layer
-│ │ │ ├── leaderboard_entity.dart
-│ │ │ ├── i_leaderboard_repository.dart
-│ │ │ └── state/ # 🎛️ Управление состоянием
-│ │ │ ├── leaderboard_cubit.dart
-│ │ │ └── leaderboard_state.dart
-│ │ │
-│ │ └── presentation/ # 🎨 Presentation Layer
-│ │ └── leaderboard_screen.dart
-│ │
-│ ├── game/ # 🎮 Игровой процесс
-│ │ └── game_screen.dart # Игровой экран
-│ │
-│ ├── main_menu/ # 📱 Главное меню
-│ │ └── main_menu_screen.dart # Экран меню
-│ │
-│ └── init_app/ # ⚙️ Инициализация приложения
-│ ├── data/ # 📊 Data Layer
-│ │ ├── initialization.dart
-│ │ └── initialize_dependencies.dart
-│ │
-│ └── widget/ # 🎨 Presentation Layer
-│ # Виджеты инициализации
-│
-└── l10n/ # 🌍 Локализация
-├── app_en.arb # 🇬🇧 Английские переводы
-├── app_ru.arb # 🇷🇺 Русские переводы
-└── gen/ # 🔧 Сгенерированный код
-├── app_localizations.dart
-├── app_localizations_en.dart
-└── app_localizations_ru.dart
 
-text
+lib/  
+├── app/ # 🏛️ Ядро приложения (общие компоненты)  
+│ ├── di/ # 💉 Dependency Injection  
+│ │ ├── di_container.dart # Контейнер зависимостей  
+│ │ └── depends.dart # Регистрация зависимостей  
+│ │  
+│ ├── http/ # 🌐 Сетевой слой  
+│ │ ├── i_http_client.dart # Интерфейс HTTP-клиента  
+│ │ └── base_http_client.dart # Базовая реализация  
+│ │  
+│ ├── storage/ # 💾 Локальное хранилище  
+│ │ ├── i_storage_service.dart  
+│ │ └── storage_service.dart  
+│ │  
+│ ├── theme/ # 🎨 Тема приложения  
+│ │ └── app_theme.dart # Конфигурация тем  
+│ │  
+│ ├── utils/ # 🛠️ Утилиты  
+│ │ ├── logger.dart # Кастомный логгер  
+│ │ ├── error_util.dart # Обработка ошибок  
+│ │ └── app_zone.dart # Зоны выполнения  
+│ │  
+│ ├── ext/ # 🔧 Расширения  
+│ │ └── context_ext.dart # Расширения BuildContext  
+│ │  
+│ ├── widget/ # 🧩 Переиспользуемые виджеты  
+│ │ └── app_error.dart # Виджет ошибки  
+│ │  
+│ ├── equals_mixin.dart # 🔁 Миксин для сравнения объектов  
+│ └── game_router.dart # 🧭 Навигация  
+│  
+├── features/ # 🚀 Фичи приложения (по модулям)  
+│ │  
+│ ├── user/ # 👤 Пользовательская система  
+│ │ ├── data/ # 📊 Data Layer  
+│ │ │ ├── user_dto.dart # Data Transfer Object  
+│ │ │ └── user_repository.dart # Реализация репозитория  
+│ │ │  
+│ │ ├── domain/ # 🧠 Domain Layer  
+│ │ │ ├── user_entity.dart # Сущность пользователя  
+│ │ │ ├── i_user_repository.dart # Интерфейс репозитория  
+│ │ │ └── state/ # 🎛️ Управление состоянием  
+│ │ │ ├── user_cubit.dart # Cubit для пользователя  
+│ │ │ └── user_state.dart # Состояния пользователя  
+│ │ │  
+│ │ └── presentation/ # 🎨 Presentation Layer  
+│ │ ├── user_screen.dart # Основной экран  
+│ │ └── components/ # 🧱 UI компоненты  
+│ │ ├── username_field.dart # Поле ввода имени  
+│ │ ├── user_created.dart # Виджет успеха  
+│ │ └── user_error.dart # Виджет ошибки  
+│ │  
+│ ├── leaderboard/ # 🏆 Таблица лидеров  
+│ │ ├── data/ # 📊 Data Layer  
+│ │ │ ├── leaderboard_dto.dart  
+│ │ │ └── leaderboard_repository.dart  
+│ │ │  
+│ │ ├── domain/ # 🧠 Domain Layer  
+│ │ │ ├── leaderboard_entity.dart  
+│ │ │ ├── i_leaderboard_repository.dart  
+│ │ │ └── state/ # 🎛️ Управление состоянием  
+│ │ │ ├── leaderboard_cubit.dart  
+│ │ │ └── leaderboard_state.dart  
+│ │ │  
+│ │ └── presentation/ # 🎨 Presentation Layer  
+│ │ └── leaderboard_screen.dart  
+│ │  
+│ ├── game/ # 🎮 Игровой процесс  
+│ │ └── game_screen.dart # Игровой экран  
+│ │  
+│ ├── main_menu/ # 📱 Главное меню  
+│ │ └── main_menu_screen.dart # Экран меню  
+│ │  
+│ └── init_app/ # ⚙️ Инициализация приложения  
+│ ├── data/ # 📊 Data Layer  
+│ │ ├── initialization.dart  
+│ │ └── initialize_dependencies.dart  
+│ │  
+│ └── widget/ # 🎨 Presentation Layer  
+│ # Виджеты инициализации  
+│  
+└── l10n/ # 🌍 Локализация  
+├── app_en.arb # 🇬🇧 Английские переводы  
+├── app_ru.arb # 🇷🇺 Русские переводы  
+└── gen/ # 🔧 Сгенерированный код  
+├── app_localizations.dart  
+├── app_localizations_en.dart  
+└── app_localizations_ru.dart
 
 ## 🎯 Назначение директорий
 
