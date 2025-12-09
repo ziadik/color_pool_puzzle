@@ -3,6 +3,7 @@ import '../../../features/user/domain/state/user_cubit.dart';
 import '../../features/leaderboard/domain/i_leaderboard_repository.dart';
 import '../http/i_http_client.dart';
 import '../storage/i_storage_service.dart';
+import '../theme/app_theme.dart';
 
 class Depends {
   /// Статический экземпляр класса Depends
@@ -38,6 +39,8 @@ class Depends {
   //   // Инициализируем менеджер состояния пользователя
   //   userCubit = UserCubit(repository: _userRepository);
   // }
+
+  late final AppTheme themeCubit;
 
   late final IStorageService storageService;
 

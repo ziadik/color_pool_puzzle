@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'app/di/depends.dart';
 import 'app/di/di_container.dart';
+import 'app/theme/app_theme.dart';
 import 'app/utils/app_zone.dart';
 import 'app/utils/error_util.dart';
 import 'app/widget/app_error.dart';
@@ -45,8 +46,6 @@ void main() => appZone(() async {
   // }
 });
 
-/// Экран ошибки приложения
-
 class _MyApp extends StatefulWidget {
   const _MyApp({required this.depends});
 
@@ -60,11 +59,32 @@ class _MyApp extends StatefulWidget {
 
 class MyAppState extends State<_MyApp> {
   Locale _locale = const Locale('ru');
-
+  ThemeMode _themeMode = ThemeMode.system;
+  ThemeData _theme = AppTheme.light;
   @override
   void initState() {
     super.initState();
     _loadLocale();
+  }
+
+  /// Получение текущего режима темы
+  ThemeMode get themeMode => _themeMode;
+
+  /// Установить тему
+  set themeMode(ThemeMode value) {
+    if (_themeMode != value) {
+      _themeMode = value;
+      _theme = _themeMode == ThemeMode.light ? AppTheme.light : AppTheme.dark;
+    }
+  }
+
+  /// Метод для переключения темы приложения.
+  ///
+  /// Переключает между светлой и темной темой.
+  /// Если текущая тема светлая, переключает на темную и наоборот.
+  void changeTheme() {
+    _themeMode = _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+    _theme = _themeMode == ThemeMode.light ? AppTheme.light : AppTheme.dark;
   }
 
   Future<void> _loadLocale() async {
@@ -77,6 +97,7 @@ class MyAppState extends State<_MyApp> {
 
   void setLocale(Locale locale) {
     setState(() {
+      changeTheme();
       _locale = locale;
     });
     _saveLocale(locale.languageCode);
@@ -92,6 +113,7 @@ class MyAppState extends State<_MyApp> {
     return DiContainer(
       depends: widget.depends,
       child: MaterialApp(
+        theme: _theme,
         debugShowCheckedModeBanner: false,
         locale: _locale,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
