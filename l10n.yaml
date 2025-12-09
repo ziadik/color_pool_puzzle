@@ -15,7 +15,3 @@ output-localization-file: app_localizations.dart
 # возвращять null-safety строку (String, а не String?)
 nullable-getter: false
 
-# Классы, которые не будут генерироваться
-# Данное ствойство локализатора скоре перестанет поддерживаться,
-# поэтому стелим солому заранее
-synthetic-package: false

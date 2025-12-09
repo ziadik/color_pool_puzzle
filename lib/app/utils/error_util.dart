@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_classes_with_only_static_members
 
 import 'dart:async';
+import 'logger.dart';
 
 /// Error util.
 abstract final class ErrorUtil {
@@ -14,11 +15,9 @@ abstract final class ErrorUtil {
       await _captureException(exception, stackTrace, hint, fatal);
 
       // Простое логирование в консоль вместо l.e
-      print('ERROR: $exception');
-      print(stackTrace);
+      l.e('ERROR: $exception', stackTrace);
     } on Object catch (error, stackTrace) {
-      print('Error while logging error "$error" inside ErrorUtil.logError');
-      print(stackTrace);
+      l.e('Error while logging error "$error" inside ErrorUtil.logError', stackTrace);
     }
   }
 
@@ -26,14 +25,12 @@ abstract final class ErrorUtil {
   static Future<void> logMessage(String message, {StackTrace? stackTrace, String? hint, bool warning = false}) async {
     try {
       final trace = stackTrace ?? StackTrace.current;
-      print('${warning ? 'WARNING' : 'MESSAGE'}: $message');
-      print(trace);
+      l.w('${warning ? 'WARNING' : 'MESSAGE'}: $message');
 
       // Заглушка вместо $captureMessage
       await _captureMessage(message, trace, hint, warning);
     } on Object catch (error, stackTrace) {
-      print('Error while logging error "$error" inside ErrorUtil.logMessage');
-      print(stackTrace);
+      l.e('Error while logging error "$error" inside ErrorUtil.logMessage', stackTrace);
     }
   }
 
