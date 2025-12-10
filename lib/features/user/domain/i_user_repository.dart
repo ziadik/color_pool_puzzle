@@ -2,17 +2,24 @@ import 'user_entity.dart';
 
 /// Интерфейс репозитория пользователя
 abstract interface class IUserRepository {
-  /// Создание пользователя
-  /// Если пользователь с таким именем уже существует,
-  /// то возвращается существующий пользователь
-  Future<UserEntity> createUser(String username);
+  /// Создание или получение пользователя через Supabase Auth
+  Future<UserEntity> signUpOrSignIn(String email, String password, String username);
 
-  // Установка счета пользователя,
-  Future<UserEntity> setScores(String username, int scores);
+  /// Вход через анонимный аккаунт
+  Future<UserEntity> signInAnonymously(String username);
 
-  /// Получение пользователя из локального хранилища
-  Future<UserEntity?> getUserFromStorage();
+  /// Вход с существующими учетными данными
+  Future<UserEntity> signIn(String email, String password);
 
-  /// Удаление пользователя из локального хранилища
-  Future<void> deleteUserFromStorage();
+  /// Выход из системы
+  Future<void> signOut();
+
+  /// Получение текущего пользователя
+  Future<UserEntity?> getCurrentUser();
+
+  /// Обновление профиля пользователя
+  Future<UserEntity> updateProfile({String? username, String? avatarUrl});
+
+  /// Сохранение лучшего результата
+  Future<UserEntity> setBestScore(int score);
 }

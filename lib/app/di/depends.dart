@@ -1,3 +1,5 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../../features/user/domain/i_user_repository.dart';
 import '../../../features/user/domain/state/user_cubit.dart';
 import '../../features/leaderboard/domain/i_leaderboard_repository.dart';
@@ -45,7 +47,10 @@ class Depends {
   late final IStorageService storageService;
 
   /// Интерфейс HTTP клиента
-  late final IHttpClient httpClient;
+  // late final IHttpClient httpClient;
+
+  // Получаем SupabaseClient
+  late final SupabaseClient supabaseClient;
 
   /// Интерфейс репозитория для работы с таблицей лидеров
   late final ILeaderboardRepository leaderRepository;

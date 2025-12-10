@@ -3,7 +3,7 @@ import '../i_user_repository.dart';
 import 'user_state.dart';
 
 /// Класс для управления состоянием пользователя
-/// и взаимодействия с удаленным репозиторием
+/// и взаимодействия с Supabase
 class UserCubit {
   final IUserRepository repository;
 
@@ -11,78 +11,99 @@ class UserCubit {
 
   final ValueNotifier<UserState> stateNotifier = ValueNotifier(UserInitState());
 
-  Future<void> createUser(String username) async {
-    // Проверка состояния, если состояние загрузки, то не выполнять запрос
-    // и не перезаписывать состояние
+  /// Регистрация или вход по email
+  Future<void> signUpOrSignIn(String email, String password, String username) async {
     if (stateNotifier.value is UserLoadingState) return;
 
     try {
-      // Установка состояния загрузки
       emit(UserLoadingState());
-      // Создание пользователя
-      // Если пользователь с таким именем уже существует,
-      final entity = await repository.createUser(username);
-      // Установка состояния успешной загрузки
-      // и передача сущности пользователя
+      final entity = await repository.signUpOrSignIn(email, password, username);
       emit(UserSuccessState(entity));
     } on Object catch (error, stackTrace) {
-      // Установка состояния ошибки
-      // и передача сообщения об ошибке
-      emit(UserErrorState('Ошибка создания пользователя', error: error, stackTrace: stackTrace));
+      emit(UserErrorState('Ошибка авторизации', error: error, stackTrace: stackTrace));
     }
   }
 
-  /// Установка счета пользователя
-  /// [username] - имя пользователя
-  /// [scores] - счет пользователя
-  Future<void> setScores(String username, int scores) async {
+  /// Вход через анонимный аккаунт
+  Future<void> signInAnonymously(String username) async {
     if (stateNotifier.value is UserLoadingState) return;
 
     try {
       emit(UserLoadingState());
-      final entity = await repository.setScores(username, scores);
+      final entity = await repository.signInAnonymously(username);
       emit(UserSuccessState(entity));
     } on Object catch (error, stackTrace) {
-      emit(UserErrorState('Ошибка обновления результата пользователя', error: error, stackTrace: stackTrace));
+      emit(UserErrorState('Ошибка создания анонимного пользователя', error: error, stackTrace: stackTrace));
+    }
+  }
+
+  /// Вход с существующими учетными данными
+  Future<void> signIn(String email, String password) async {
+    if (stateNotifier.value is UserLoadingState) return;
+
+    try {
+      emit(UserLoadingState());
+      final entity = await repository.signIn(email, password);
+      emit(UserSuccessState(entity));
+    } on Object catch (error, stackTrace) {
+      emit(UserErrorState('Ошибка входа', error: error, stackTrace: stackTrace));
+    }
+  }
+
+  /// Обновление лучшего результата
+  Future<void> setBestScore(int score) async {
+    if (stateNotifier.value is UserLoadingState) return;
+
+    try {
+      emit(UserLoadingState());
+      final entity = await repository.setBestScore(score);
+      emit(UserSuccessState(entity));
+    } on Object catch (error, stackTrace) {
+      emit(UserErrorState('Ошибка обновления результата', error: error, stackTrace: stackTrace));
+    }
+  }
+
+  /// Обновление профиля
+  Future<void> updateProfile({String? username, String? avatarUrl}) async {
+    if (stateNotifier.value is UserLoadingState) return;
+
+    try {
+      emit(UserLoadingState());
+      final entity = await repository.updateProfile(username: username, avatarUrl: avatarUrl);
+      emit(UserSuccessState(entity));
+    } on Object catch (error, stackTrace) {
+      emit(UserErrorState('Ошибка обновления профиля', error: error, stackTrace: stackTrace));
     }
   }
 
   /// Выход из аккаунта
-  /// Удаление текущего состояния
-  void signOut() {
-    // Очищаем состояние пользователя
-    repository.deleteUserFromStorage();
-    emit(UserInitState());
+  Future<void> signOut() async {
+    try {
+      emit(UserLoadingState());
+      await repository.signOut();
+      emit(UserInitState());
+    } on Object catch (error, stackTrace) {
+      emit(UserErrorState('Ошибка выхода', error: error, stackTrace: stackTrace));
+    }
   }
 
-  /// Сброс состояния кубита
-  /// Пригодится для сброса состояния
-  /// при повторном входе в аккаунт
-  void reset() {
-    // Очищаем состояние пользователя
-    repository.deleteUserFromStorage();
-    emit(UserInitState());
+  /// Восстановление текущего пользователя
+  Future<void> restoreUser() async {
+    try {
+      emit(UserLoadingState());
+      final entity = await repository.getCurrentUser();
+      if (entity != null) {
+        emit(UserSuccessState(entity));
+      } else {
+        emit(UserInitState());
+      }
+    } on Object catch (error, stackTrace) {
+      emit(UserErrorState('Ошибка восстановления пользователя', error: error, stackTrace: stackTrace));
+    }
   }
 
   /// Установка текущего состояния
   void emit(UserState cubitState) {
     stateNotifier.value = cubitState;
-  }
-
-  /// Получение пользователя из локального хранилища
-  /// Если пользователь найден, то устанавливаем состояние
-  /// успешной загрузки и передаем сущность пользователя
-  Future<void> restoreUser() async {
-    try {
-      // Получение пользователя из локального хранилища
-      final entity = await repository.getUserFromStorage();
-      if (entity != null) {
-        // Установка состояния успешной загрузки
-        // и передача сущности пользователя
-        emit(UserSuccessState(entity));
-      }
-    } on Object catch (_) {
-      emit(UserInitState());
-    }
   }
 }

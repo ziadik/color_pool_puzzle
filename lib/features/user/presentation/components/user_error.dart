@@ -1,47 +1,55 @@
 import 'package:flutter/material.dart';
 
-import '../../../../app/ext/context_ext.dart';
 import '../../../../main.dart';
 
 /// Компонент для отображения ошибки
-/// при создании пользователя
 class UserError extends StatelessWidget {
-  const UserError({super.key, required this.message, required this.username});
+  const UserError({super.key, required this.message, required this.onRetry});
 
   /// Сообщение об ошибке
   final String message;
 
-  /// Имя пользователя
-  final String username;
+  /// Коллбэк для повторной попытки
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(message),
-        SizedBox(height: 16),
-        // Кнопка для перезапуска создания пользователя
-        ElevatedButton(
-          onPressed: () {
-            // Сбрасываем состояние кубита
-            // чтобы начать процесс создания пользователя заново
-            context.di.userCubit.reset();
-            // Пробуем снова создать пользователя
-            context.di.userCubit.createUser(username);
-          },
-          child: Text('Попробовать снова'),
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+
+            const SizedBox(height: 16),
+
+            Text('Ошибка', style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.red)),
+
+            const SizedBox(height: 8),
+
+            Text(message, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
+
+            const SizedBox(height: 24),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(onPressed: onRetry, child: const Text('Попробовать снова')),
+
+                const SizedBox(width: 16),
+
+                OutlinedButton(
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, GameRouter.initialRoute);
+                  },
+                  child: const Text('В главное меню'),
+                ),
+              ],
+            ),
+          ],
         ),
-        SizedBox(height: 16),
-        // Кнопка для возврата в главное меню
-        ElevatedButton(
-          onPressed: () {
-            // Переход на главный экран приложения
-            Navigator.pushReplacementNamed(context, GameRouter.initialRoute);
-          },
-          child: Text('Вернуться в главное меню'),
-        ),
-      ],
+      ),
     );
   }
 }

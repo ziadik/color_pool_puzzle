@@ -1,86 +1,160 @@
-import 'dart:convert';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../app/http/i_http_client.dart';
-import '../../../app/storage/i_storage_service.dart';
-import 'user_dto.dart';
 import '../domain/i_user_repository.dart';
 import '../domain/user_entity.dart';
+import 'user_dto.dart';
 
-/// Репозиторий для работы с пользователем
+/// Репозиторий для работы с пользователем через Supabase
 final class UserRepository implements IUserRepository {
-  final IHttpClient httpClient;
-  final IStorageService storageService;
+  final SupabaseClient supabase;
 
-  UserRepository({required this.httpClient, required this.storageService});
+  UserRepository({required this.supabase});
 
   @override
-  Future<UserEntity> createUser(String username) async {
-    /// JSON-данные c отложенной инициализацией
-    /// Получаем данные от сервера или создаем пользователя с id = 0 и score = 0
-    late final Map<String, dynamic> resultJson;
-
-    // Получение данных
+  Future<UserEntity> signUpOrSignIn(String email, String password, String username) async {
     try {
-      final response = await httpClient.post('/users/', body: {"username": username});
-      // Проверка статуса ответа
-      if (response.statusCode != 200) {
-        throw Exception('Ошибка при создании пользователя: ${response.statusCode}');
+      // Проверяем, существует ли пользователь с таким email
+      final existingUsers = await supabase.from('Profiles').select().eq('email', email).maybeSingle();
+
+      if (existingUsers != null) {
+        // Пользователь существует - выполняем вход
+        final response = await supabase.auth.signInWithPassword(email: email, password: password);
+
+        if (response.user == null) {
+          throw Exception('Ошибка входа: пользователь не найден');
+        }
+
+        return await _fetchUserProfile(response.user!.id);
+      } else {
+        // Пользователь не существует - регистрируем
+        final response = await supabase.auth.signUp(email: email, password: password, data: {'username': username});
+
+        if (response.user == null) {
+          throw Exception('Ошибка регистрации');
+        }
+
+        // Создаем профиль в таблице Profiles
+        await supabase.from('Profiles').insert({'id': response.user!.id, 'email': email, 'username': username, 'best_score': 0, 'is_anonymous': false});
+
+        return UserDto.fromAuthUser(response.user!.id, email, username).toEntity();
       }
-      resultJson = json.decode(response.body);
-    } on Object catch (_) {
-      // Если произошла ошибка, то создаем пользователя с id = 0 и score = 0
-      // и сохраняем его в локальном хранилище
-      resultJson = {'id': 0, 'username': username, 'score': 0};
+    } catch (e) {
+      throw Exception('Ошибка авторизации: $e');
     }
-    final userDto = UserDto.fromJson(resultJson);
-    // Сохранение пользователя в локальном хранилище
-    await storageService.setString('user', jsonEncode(userDto.toJson()));
-    // Преобразование данных в список сущностей
-    return userDto.toEntity();
   }
 
   @override
-  Future<UserEntity> setScores(String username, int scores) async {
-    /// JSON-данные c отложенной инициализацией
-    /// Получаем данные от сервера или создаем пользователя с id = 0 и score = 0
-    late final Map<String, dynamic> resultJson;
-
+  Future<UserEntity> signInAnonymously(String username) async {
     try {
-      final response = await httpClient.put('/users/scores/', body: {'username': username, 'score': scores});
-      // Проверка статуса ответа
-      if (response.statusCode != 200) {
-        throw Exception('Ошибка при обновлении пользователя: ${response.statusCode}');
+      // Создаем анонимного пользователя
+      final response = await supabase.auth.signUp(
+        email: '${DateTime.now().millisecondsSinceEpoch}@anonymous.game',
+        password: 'anonymous_${DateTime.now().millisecondsSinceEpoch}',
+        data: {'username': username},
+      );
+
+      if (response.user == null) {
+        throw Exception('Ошибка создания анонимного пользователя');
       }
-    } on Object catch (_) {
-      // Если произошла ошибка, то
-      // сохраняем его в локальном хранилище
-      resultJson = {'id': 0, 'username': username, 'score': scores};
+
+      // Создаем профиль анонимного пользователя
+      await supabase.from('Profiles').insert({'id': response.user!.id, 'email': '', 'username': username, 'best_score': 0, 'is_anonymous': true});
+
+      return UserDto(id: response.user!.id, email: '', username: username, bestScore: 0, createdAt: DateTime.now(), updatedAt: DateTime.now(), isAnonymous: true).toEntity();
+    } catch (e) {
+      throw Exception('Ошибка создания анонимного пользователя: $e');
     }
-    final userDto = UserDto.fromJson(resultJson);
-    // Сохранение пользователя в локальном хранилище
-    await storageService.setString('user', jsonEncode(userDto.toJson()));
-    // Преобразование данных в список сущностей
-    return userDto.toEntity();
   }
 
   @override
-  Future<void> deleteUserFromStorage() async {
-    // Очистка локального хранилища
-    await storageService.clear();
+  Future<UserEntity> signIn(String email, String password) async {
+    try {
+      final response = await supabase.auth.signInWithPassword(email: email, password: password);
+
+      if (response.user == null) {
+        throw Exception('Ошибка входа: пользователь не найден');
+      }
+
+      return await _fetchUserProfile(response.user!.id);
+    } catch (e) {
+      throw Exception('Ошибка входа: $e');
+    }
   }
 
   @override
-  Future<UserEntity?> getUserFromStorage() async {
-    // Получение данных из локального хранилища
-    final userString = storageService.getString('user');
-    if (userString == null) {
+  Future<void> signOut() async {
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      throw Exception('Ошибка выхода: $e');
+    }
+  }
+
+  @override
+  Future<UserEntity?> getCurrentUser() async {
+    try {
+      final currentUser = supabase.auth.currentUser;
+      if (currentUser == null) return null;
+
+      return await _fetchUserProfile(currentUser.id);
+    } catch (e) {
       return null;
     }
-    // Преобразование данных в JSON
-    final userJson = json.decode(userString);
-    // Преобразование JSON в DTO
-    final userDto = UserDto.fromJson(userJson);
-    // Преобразование DTO в сущность
-    return userDto.toEntity();
+  }
+
+  @override
+  Future<UserEntity> updateProfile({String? username, String? avatarUrl}) async {
+    try {
+      final currentUser = supabase.auth.currentUser;
+      if (currentUser == null) {
+        throw Exception('Пользователь не авторизован');
+      }
+
+      final updates = <String, dynamic>{'updated_at': DateTime.now().toIso8601String()};
+
+      if (username != null) updates['username'] = username;
+      if (avatarUrl != null) updates['avatar_url'] = avatarUrl;
+
+      await supabase.from('Profiles').update(updates).eq('id', currentUser.id);
+
+      return await _fetchUserProfile(currentUser.id);
+    } catch (e) {
+      throw Exception('Ошибка обновления профиля: $e');
+    }
+  }
+
+  @override
+  Future<UserEntity> setBestScore(int score) async {
+    try {
+      final currentUser = supabase.auth.currentUser;
+      if (currentUser == null) {
+        throw Exception('Пользователь не авторизован');
+      }
+
+      // Получаем текущий лучший результат
+      final currentProfile = await supabase.from('Profiles').select('best_score').eq('id', currentUser.id).single();
+
+      final currentBestScore = currentProfile['best_score'] as int? ?? 0;
+
+      // Обновляем только если новый результат лучше
+      if (score > currentBestScore) {
+        await supabase.from('Profiles').update({'best_score': score, 'updated_at': DateTime.now().toIso8601String()}).eq('id', currentUser.id);
+      }
+
+      return await _fetchUserProfile(currentUser.id);
+    } catch (e) {
+      throw Exception('Ошибка обновления результата: $e');
+    }
+  }
+
+  /// Вспомогательный метод для получения профиля пользователя
+  Future<UserEntity> _fetchUserProfile(String userId) async {
+    try {
+      final response = await supabase.from('Profiles').select().eq('id', userId).single();
+
+      return UserDto.fromJson(response).toEntity();
+    } catch (e) {
+      throw Exception('Ошибка получения профиля: $e');
+    }
   }
 }

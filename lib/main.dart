@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'app/di/depends.dart';
 import 'app/di/di_container.dart';
@@ -17,6 +18,8 @@ part 'app/game_router.dart';
 
 void main() => appZone(() async {
   // Splash screen
+  await DotEnv().load(fileName: ".env");
+
   final initializationProgress = ValueNotifier<({int progress, String message})>((progress: 0, message: ''));
   /* runApp(SplashScreen(progress: initializationProgress)); */
   $initializeApp(

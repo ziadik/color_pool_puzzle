@@ -1,7 +1,8 @@
 import 'dart:async';
 
+import 'package:color_pool_puzzle/app/supabase/supabase_service.dart';
+
 import '../../../app/di/depends.dart';
-import '../../../app/http/base_http_client.dart';
 import '../../../app/storage/storage_service.dart';
 import '../../../features/user/data/user_repository.dart';
 import '../../../features/user/domain/state/user_cubit.dart';
@@ -35,10 +36,11 @@ Future<Depends> $initializeDepends({void Function(int progress, String message)?
 typedef _InitializationStep = FutureOr<void> Function(Depends dependencies);
 
 final Map<String, _InitializationStep> _initializationSteps = <String, _InitializationStep>{
-  'Initialize HTTP Client': (dependencies) {
-    l.v('Initializing HTTP Client...');
-    dependencies.httpClient = BaseHttpClient();
-    l.i('HTTP Client initialized');
+  'Initialize Supabase Client': (dependencies) async {
+    l.v('Initializing Supabase Client...');
+    await SupabaseService.initialize();
+    dependencies.supabaseClient = SupabaseService.client;
+    l.i('Supabase Client initialized');
   },
   'Initialize storage service': (dependencies) async {
     l.v('Initializing storage service...');
@@ -48,12 +50,12 @@ final Map<String, _InitializationStep> _initializationSteps = <String, _Initiali
   },
   'Initialize leaderboard repository': (dependencies) {
     l.v('Initializing leaderboard repository...');
-    dependencies.leaderRepository = LeaderboardRepository(httpClient: dependencies.httpClient);
+    dependencies.leaderRepository = LeaderboardRepository(supabase: dependencies.supabaseClient);
     l.i('Leaderboard repository initialized');
   },
   'Initialize user repository': (dependencies) {
     l.v('Initializing user repository...');
-    dependencies.userRepository = UserRepository(httpClient: dependencies.httpClient, storageService: dependencies.storageService);
+    dependencies.userRepository = UserRepository(supabase: dependencies.supabaseClient); //, storageService: dependencies.storageService);
     l.i('User repository initialized');
   },
   'Initialize user cubit': (dependencies) {
