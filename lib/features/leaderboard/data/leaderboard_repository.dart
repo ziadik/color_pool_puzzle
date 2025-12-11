@@ -18,7 +18,7 @@ final class LeaderboardRepository implements ILeaderboardRepository {
           .from('leaderboard')
           .select('''
             *,
-            Profiles (
+            profiles (
               username,
               avatar_url
             )
@@ -39,10 +39,10 @@ final class LeaderboardRepository implements ILeaderboardRepository {
     try {
       // Получаем записи лидерборда для конкретного уровня
       final response = await supabase
-          .from('Leaderboard')
+          .from('leaderboard')
           .select('''
             *,
-            Profiles (
+            profiles (
               username,
               avatar_url
             )
@@ -108,10 +108,10 @@ final class LeaderboardRepository implements ILeaderboardRepository {
       if (userId == null) return null;
 
       final response = await supabase
-          .from('Leaderboard')
+          .from('leaderboard')
           .select('''
             *,
-            Profiles (
+            profiles (
               username,
               avatar_url
             )
