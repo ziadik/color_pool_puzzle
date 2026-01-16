@@ -133,6 +133,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Russian'**
   String get russian;
+
+  /// Label for the login button
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login;
 }
 
 class _AppLocalizationsDelegate

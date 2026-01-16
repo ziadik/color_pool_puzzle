@@ -25,4 +25,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get russian => 'Русский';
+
+  @override
+  String get login => 'Войти';
 }

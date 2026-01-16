@@ -5,5 +5,6 @@
   "settings": "Настройки",
   "language": "Язык",
   "english": "Английский",
-  "russian": "Русский"
+  "russian": "Русский",
+  "login": "Войти"
 }

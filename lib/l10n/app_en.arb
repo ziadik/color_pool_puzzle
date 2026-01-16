@@ -24,4 +24,9 @@
   "@russian": {
     "description": "Name of Russian language"
   }
+  ,
+  "login": "Login",
+  "@login": {
+    "description": "Label for the login button"
+  }
 }

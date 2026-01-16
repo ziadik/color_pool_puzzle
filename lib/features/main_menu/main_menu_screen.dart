@@ -20,7 +20,7 @@ class MainMenuScreen extends StatelessWidget {
                 // Переход на экран игры
                 Navigator.pushReplacementNamed(context, GameRouter.userRoute);
               },
-              child: Text(l10n.startGame),
+              child: Text(l10n.login),
             ),
             SizedBox(height: 16),
             ElevatedButton(

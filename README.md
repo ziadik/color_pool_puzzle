@@ -220,17 +220,15 @@ lib/features/new_feature/
    git clone https://github.com/yourusername/color_pool_puzzle.git
    cd color_pool_puzzle
 Install dependencies
+  flutter pub get
 
-bash
-flutter pub get
 Generate localization files
+  flutter gen-l10n
 
-bash
-flutter gen-l10n
 Run the app
 
-bash
-flutter run
+  flutter run
+
 Build Commands
 bash
 # Build for Android
