@@ -4,7 +4,7 @@ import 'package:color_pool_puzzle/app/supabase/supabase_service.dart';
 
 import '../../../app/di/depends.dart';
 import '../../../app/storage/storage_service.dart';
-import '../../../features/user/data/user_repository.dart';
+import '../../user/data/user_supabase_repository.dart';
 import '../../../features/user/domain/state/user_cubit.dart';
 import '../../leaderboard/data/leaderboard_supabase_repository.dart';
 import '../../../app/utils/logger.dart';
@@ -55,7 +55,7 @@ final Map<String, _InitializationStep> _initializationSteps = <String, _Initiali
   },
   'Initialize user repository': (dependencies) {
     l.v('Initializing user repository...');
-    dependencies.userRepository = UserRepository(supabase: dependencies.supabaseClient); //, storageService: dependencies.storageService);
+    dependencies.userRepository = UserSupabaseRepository(supabase: dependencies.supabaseClient); //, storageService: dependencies.storageService);
     l.i('User repository initialized');
   },
   'Initialize user cubit': (dependencies) {

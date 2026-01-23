@@ -5,10 +5,10 @@ import '../domain/user_entity.dart';
 import 'user_dto.dart';
 
 /// Репозиторий для работы с пользователем через Supabase
-final class UserRepository implements IUserRepository {
+final class UserSupabaseRepository implements IUserRepository {
   final SupabaseClient supabase;
 
-  UserRepository({required this.supabase});
+  UserSupabaseRepository({required this.supabase});
 
   @override
   Future<UserEntity> signUpOrSignIn(String email, String password, String username) async {
