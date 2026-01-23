@@ -12,6 +12,8 @@ dependencies:
   http: any
   ui:
     path: packages/ui
+  levels:
+    path: packages/levels
   shared_preferences: ^2.5.3
   flutter_localizations:
     sdk: flutter
