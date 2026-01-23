@@ -6,7 +6,7 @@ import '../../../app/di/depends.dart';
 import '../../../app/storage/storage_service.dart';
 import '../../../features/user/data/user_repository.dart';
 import '../../../features/user/domain/state/user_cubit.dart';
-import '../../leaderboard/data/leaderboard_repository.dart';
+import '../../leaderboard/data/leaderboard_supabase_repository.dart';
 import '../../../app/utils/logger.dart';
 
 /// Initializes the dependencies and returns a [Depends] object
@@ -50,7 +50,7 @@ final Map<String, _InitializationStep> _initializationSteps = <String, _Initiali
   },
   'Initialize leaderboard repository': (dependencies) {
     l.v('Initializing leaderboard repository...');
-    dependencies.leaderRepository = LeaderboardRepository(supabase: dependencies.supabaseClient);
+    dependencies.leaderRepository = LeaderboardSupabaseRepository(supabase: dependencies.supabaseClient);
     l.i('Leaderboard repository initialized');
   },
   'Initialize user repository': (dependencies) {

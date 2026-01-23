@@ -5,10 +5,10 @@ import '../domain/leaderboard_entity.dart';
 import 'leaderboard_dto.dart';
 
 ///  Реализация репозитория для таблицы лидеров с использованием Supabase
-final class LeaderboardRepository implements ILeaderboardRepository {
+final class LeaderboardSupabaseRepository implements ILeaderboardRepository {
   final SupabaseClient supabase;
 
-  LeaderboardRepository({required this.supabase});
+  LeaderboardSupabaseRepository({required this.supabase});
 
   @override
   Future<Iterable<LeaderboardEntity>> fetchLeaderboard() async {
