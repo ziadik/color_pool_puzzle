@@ -514,6 +514,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
+  ui:
+    dependency: "direct main"
+    description:
+      path: "packages/ui"
+      relative: true
+    source: path
+    version: "0.0.1"
   url_launcher:
     dependency: transitive
     description:
@@ -635,5 +642,5 @@ packages:
     source: hosted
     version: "2.1.0"
 sdks:
-  dart: ">=3.10.0 <4.0.0"
+  dart: ">=3.10.7 <4.0.0"
   flutter: ">=3.35.0"

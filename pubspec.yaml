@@ -10,6 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
   http: any
+  ui:
+    path: packages/ui
   shared_preferences: ^2.5.3
   flutter_localizations:
     sdk: flutter
