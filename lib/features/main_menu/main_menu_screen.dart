@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ui/example.dart';
 
 import '../../app/ext/context_ext.dart';
 import '../../main.dart';
@@ -11,31 +12,34 @@ class MainMenuScreen extends StatelessWidget {
     final l10n = context.l10n;
 
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                // Переход на экран игры
-                Navigator.pushReplacementNamed(context, GameRouter.userRoute);
-              },
-              child: Text(l10n.login),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Переход на экран ввода имени игрока
-                Navigator.pushNamed(context, GameRouter.leaderboardRoute);
-              },
-              child: Text(l10n.bestResults),
-            ),
-            SizedBox(height: 16),
-            // Добавляем переключатель языка в приложении
-            _buildLanguageSwitcher(context),
-          ],
+      appBar: AppBar(
+        title: Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  // Переход на экран игры
+                  Navigator.pushReplacementNamed(context, GameRouter.userRoute);
+                },
+                child: Text(l10n.login),
+              ),
+              SizedBox(width: 16),
+              ElevatedButton(
+                onPressed: () {
+                  // Переход на экран ввода имени игрока
+                  Navigator.pushNamed(context, GameRouter.leaderboardRoute);
+                },
+                child: Text(l10n.bestResults),
+              ),
+              SizedBox(width: 16),
+              // Добавляем переключатель языка в приложении
+              _buildLanguageSwitcher(context),
+            ],
+          ),
         ),
       ),
+      body: MyApp(),
     );
   }
 
