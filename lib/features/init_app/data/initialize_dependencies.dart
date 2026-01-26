@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:color_pool_puzzle/app/supabase/supabase_service.dart';
+import 'package:color_pool_puzzle/features/user/data/user_local_repository.dart';
 
 import '../../../app/di/depends.dart';
 import '../../../app/storage/storage_service.dart';
@@ -36,26 +37,27 @@ Future<Depends> $initializeDepends({void Function(int progress, String message)?
 typedef _InitializationStep = FutureOr<void> Function(Depends dependencies);
 
 final Map<String, _InitializationStep> _initializationSteps = <String, _InitializationStep>{
-  'Initialize Supabase Client': (dependencies) async {
-    l.v('Initializing Supabase Client...');
-    await SupabaseService.initialize();
-    dependencies.supabaseClient = SupabaseService.client;
-    l.i('Supabase Client initialized');
-  },
+  // 'Initialize Supabase Client': (dependencies) async {
+  //   l.v('Initializing Supabase Client...');
+  //   await SupabaseService.initialize();
+  //   dependencies.supabaseClient = SupabaseService.client;
+  //   l.i('Supabase Client initialized');
+  // },
   'Initialize storage service': (dependencies) async {
     l.v('Initializing storage service...');
     dependencies.storageService = StorageService();
     await dependencies.storageService.init();
     l.i('Storage service initialized');
   },
-  'Initialize leaderboard repository': (dependencies) {
-    l.v('Initializing leaderboard repository...');
-    dependencies.leaderRepository = LeaderboardSupabaseRepository(supabase: dependencies.supabaseClient);
-    l.i('Leaderboard repository initialized');
-  },
+  // 'Initialize leaderboard repository': (dependencies) {
+  //   l.v('Initializing leaderboard repository...');
+  //   dependencies.leaderRepository = LeaderboardSupabaseRepository(supabase: dependencies.supabaseClient);
+  //   l.i('Leaderboard repository initialized');
+  // },
   'Initialize user repository': (dependencies) {
     l.v('Initializing user repository...');
-    dependencies.userRepository = UserSupabaseRepository(supabase: dependencies.supabaseClient); //, storageService: dependencies.storageService);
+    dependencies.userRepository = UserLocalRepository();
+    // dependencies.userRepository = UserSupabaseRepository(supabase: dependencies.supabaseClient); //, storageService: dependencies.storageService);
     l.i('User repository initialized');
   },
   'Initialize user cubit': (dependencies) {

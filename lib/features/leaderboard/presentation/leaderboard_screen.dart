@@ -99,7 +99,9 @@ class _ListRecords extends StatelessWidget {
       separatorBuilder: (context, index) => const Divider(height: 1),
       itemBuilder: (context, index) {
         final item = leaderboard[index];
-        final isCurrentUser = context.di.supabaseClient.auth.currentUser?.id == item.userId;
+        // final isCurrentUser = context.di.supabaseClient.auth.currentUser?.id == item.userId;
+        //TODO: Find local uid user
+        final isCurrentUser = true;
 
         return ListTile(
           leading: CircleAvatar(

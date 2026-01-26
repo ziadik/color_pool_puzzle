@@ -50,7 +50,7 @@ class Depends {
   // late final IHttpClient httpClient;
 
   // Получаем SupabaseClient
-  late final SupabaseClient supabaseClient;
+  // late final SupabaseClient supabaseClient;
 
   /// Интерфейс репозитория для работы с таблицей лидеров
   late final ILeaderboardRepository leaderRepository;
