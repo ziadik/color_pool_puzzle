@@ -1,4 +1,4 @@
-import 'package:color_pool_puzzle/features/map_editor/screens/playground_screen.dart';
+import 'package:color_pool_puzzle/features/map_editor/presentation/playground_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:levels/levels.dart';

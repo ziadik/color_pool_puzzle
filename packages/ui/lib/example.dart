@@ -4,9 +4,9 @@ import 'package:ui/src/custom_painters/custom_painters.dart';
 import 'all_painters_demo.dart';
 import 'theme_preview_screen.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+// void main() {
+//   runApp(const MyApp());
+// }
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -41,7 +41,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Custom Painters Gallery',
+      // title: 'Custom Painters Gallery',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: _currentTheme.background,
@@ -60,7 +61,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Custom Painters Gallery')),
+      // appBar: AppBar(title: const Text('Custom Painters Gallery')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
