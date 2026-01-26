@@ -7,7 +7,7 @@ class ThemeButton extends StatelessWidget {
   final bool showLabels;
   final VoidCallback? onThemeChanged;
 
-  const ThemeButton({Key? key, required this.themeManager, this.showLabels = true, this.onThemeChanged}) : super(key: key);
+  const ThemeButton({super.key, required this.themeManager, this.showLabels = true, this.onThemeChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class ThemeButton extends StatelessWidget {
 class ThemeSelector extends StatefulWidget {
   final ThemeManager themeManager;
 
-  const ThemeSelector({Key? key, required this.themeManager}) : super(key: key);
+  const ThemeSelector({super.key, required this.themeManager});
 
   @override
   _ThemeSelectorState createState() => _ThemeSelectorState();
@@ -142,7 +142,7 @@ class QuickThemeToggleButton extends StatelessWidget {
   final ThemeManager themeManager;
   final VoidCallback? onThemeChanged;
 
-  const QuickThemeToggleButton({Key? key, required this.themeManager, this.onThemeChanged}) : super(key: key);
+  const QuickThemeToggleButton({super.key, required this.themeManager, this.onThemeChanged});
 
   @override
   Widget build(BuildContext context) {

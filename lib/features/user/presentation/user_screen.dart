@@ -4,7 +4,6 @@ import '../../../app/ext/context_ext.dart';
 import '../domain/state/user_state.dart';
 import './components/user_created.dart';
 import './components/user_error.dart';
-import './components/username_field.dart';
 
 /// Экран аутентификации пользователя
 class UserScreen extends StatefulWidget {

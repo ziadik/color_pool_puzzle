@@ -9,7 +9,7 @@ class _PainterInfo {
 }
 
 class ThemePreviewScreen extends StatefulWidget {
-  const ThemePreviewScreen({Key? key}) : super(key: key);
+  const ThemePreviewScreen({super.key});
 
   @override
   State<ThemePreviewScreen> createState() => _ThemePreviewScreenState();
@@ -272,7 +272,7 @@ class _ColorDot extends StatelessWidget {
   final Color color;
   final String tooltip;
 
-  const _ColorDot({Key? key, required this.color, required this.tooltip}) : super(key: key);
+  const _ColorDot({super.key, required this.color, required this.tooltip});
 
   @override
   Widget build(BuildContext context) {

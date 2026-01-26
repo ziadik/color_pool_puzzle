@@ -1,4 +1,4 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseService {
@@ -9,10 +9,10 @@ class SupabaseService {
     if (_isInitialized) return;
 
     try {
-      final SUPABASE_URL = 'https://xfmtxijpnjktzyaiykil.supabase.co';
-      final SUPABASE_ANON_KEY =
+      final supabaseUrl = 'https://xfmtxijpnjktzyaiykil.supabase.co';
+      final supabaseAnonKey =
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmbXR4aWpwbmprdHp5YWl5a2lsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NTIyNzMsImV4cCI6MjA3NDQyODI3M30.2fTOdyLCMtQUAqcIGwmUlJDMqVEeXg0ZAYvWSwi02iU';
-      await Supabase.initialize(url: SUPABASE_URL, anonKey: SUPABASE_ANON_KEY);
+      await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
       _isInitialized = true;
     } catch (e) {
       throw Exception('Failed to initialize Supabase: $e');

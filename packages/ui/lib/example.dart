@@ -9,7 +9,7 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -55,7 +55,7 @@ class _MyAppState extends State<MyApp> {
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +184,7 @@ class _ColorInfo extends StatelessWidget {
   final String label;
   final String hex;
 
-  const _ColorInfo({Key? key, required this.color, required this.label, required this.hex}) : super(key: key);
+  const _ColorInfo({super.key, required this.color, required this.label, required this.hex});
 
   @override
   Widget build(BuildContext context) {

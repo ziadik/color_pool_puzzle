@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:levels/levels.dart';
 import 'package:ui/ui.dart';
@@ -247,7 +249,6 @@ class DynamicWallWidget extends StatelessWidget {
       case WallType.RB:
         return LeftBridgeWOTShadowCP();
       case WallType.N:
-      default:
         return null;
     }
   }

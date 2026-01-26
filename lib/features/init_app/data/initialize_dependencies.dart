@@ -1,13 +1,11 @@
 import 'dart:async';
 
-import 'package:color_pool_puzzle/app/supabase/supabase_service.dart';
+import 'package:color_pool_puzzle/features/leaderboard/data/leaderboard_local_repository.dart';
 import 'package:color_pool_puzzle/features/user/data/user_local_repository.dart';
 
 import '../../../app/di/depends.dart';
 import '../../../app/storage/storage_service.dart';
-import '../../user/data/user_supabase_repository.dart';
 import '../../../features/user/domain/state/user_cubit.dart';
-import '../../leaderboard/data/leaderboard_supabase_repository.dart';
 import '../../../app/utils/logger.dart';
 
 /// Initializes the dependencies and returns a [Depends] object
@@ -49,11 +47,12 @@ final Map<String, _InitializationStep> _initializationSteps = <String, _Initiali
     await dependencies.storageService.init();
     l.i('Storage service initialized');
   },
-  // 'Initialize leaderboard repository': (dependencies) {
-  //   l.v('Initializing leaderboard repository...');
-  //   dependencies.leaderRepository = LeaderboardSupabaseRepository(supabase: dependencies.supabaseClient);
-  //   l.i('Leaderboard repository initialized');
-  // },
+  'Initialize leaderboard repository': (dependencies) {
+    l.v('Initializing leaderboard repository...');
+    dependencies.leaderRepository = LeaderboardLocalRepository();
+    // dependencies.leaderRepository = LeaderboardSupabaseRepository(supabase: dependencies.supabaseClient);
+    l.i('Leaderboard repository initialized');
+  },
   'Initialize user repository': (dependencies) {
     l.v('Initializing user repository...');
     dependencies.userRepository = UserLocalRepository();

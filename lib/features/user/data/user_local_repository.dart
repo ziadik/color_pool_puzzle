@@ -46,7 +46,7 @@ final class UserLocalRepository implements IUserRepository {
   String _generateAnonymousEmail() {
     final counter = _prefs.getInt(_kAnonymousCounter) ?? 0;
     _prefs.setInt(_kAnonymousCounter, counter + 1);
-    return 'anonymous_${counter}@local.game';
+    return 'anonymous_$counter@local.game';
   }
 
   @override

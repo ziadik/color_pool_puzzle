@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ui/src/custom_painters/custom_painters.dart';
 
 class AllPaintersDemo extends StatefulWidget {
-  const AllPaintersDemo({Key? key}) : super(key: key);
+  const AllPaintersDemo({super.key});
 
   @override
   State<AllPaintersDemo> createState() => _AllPaintersDemoState();
@@ -97,8 +97,8 @@ class _AllPaintersDemoState extends State<AllPaintersDemo> {
                 _painterSize = (_painterSize - 20).clamp(80.0, 300.0);
               });
             },
-            child: const Icon(Icons.remove),
             tooltip: 'Decrease Size',
+            child: const Icon(Icons.remove),
           ),
           const SizedBox(height: 8),
           FloatingActionButton.small(
@@ -108,8 +108,8 @@ class _AllPaintersDemoState extends State<AllPaintersDemo> {
                 _painterSize = (_painterSize + 20).clamp(80.0, 300.0);
               });
             },
-            child: const Icon(Icons.add),
             tooltip: 'Increase Size',
+            child: const Icon(Icons.add),
           ),
           const SizedBox(height: 8),
           FloatingActionButton(
@@ -117,8 +117,8 @@ class _AllPaintersDemoState extends State<AllPaintersDemo> {
             onPressed: () {
               _themeManager.toggleTheme();
             },
-            child: const Icon(Icons.color_lens),
             tooltip: 'Toggle Theme',
+            child: const Icon(Icons.color_lens),
           ),
         ],
       ),
@@ -225,7 +225,7 @@ class _AllPaintersDemoState extends State<AllPaintersDemo> {
       _PainterInfo('Top Left In Angle', TopLeftInAngleCP(theme: _currentTheme)),
       _PainterInfo('Down Left In Angle', DownLeftInAngleCP(theme: _currentTheme)),
       _PainterInfo('Down Right Out Angle', DownRightOutAngleCP(theme: _currentTheme)),
-      _PainterInfo('Left Bridge', LeftBridgeCP(theme: _currentTheme)),
+      // _PainterInfo('Left Bridge', LeftBridgeCP(theme: _currentTheme)),
       _PainterInfo('Left Bridge (No Shadow)', LeftBridgeWOTShadowCP(theme: _currentTheme)),
       _PainterInfo('Left Bridge Shadow', LeftBridgesShadow(theme: _currentTheme)),
     ];

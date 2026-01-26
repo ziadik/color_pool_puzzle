@@ -105,17 +105,17 @@ class _ListRecords extends StatelessWidget {
 
         return ListTile(
           leading: CircleAvatar(
-            backgroundColor: isCurrentUser ? Colors.blue.withOpacity(0.2) : null,
+            backgroundColor: Colors.blue.withOpacity(0.2),
             child: Text(
               '${index + 1}',
-              style: TextStyle(fontWeight: FontWeight.bold, color: isCurrentUser ? Colors.blue : null),
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
             ),
           ),
           title: Row(
             children: [
               Text(
                 item.username,
-                style: TextStyle(fontWeight: isCurrentUser ? FontWeight.bold : FontWeight.normal, color: isCurrentUser ? Colors.blue : null),
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
               ),
               if (isCurrentUser) ...[
                 const SizedBox(width: 8),

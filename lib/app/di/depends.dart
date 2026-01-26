@@ -1,9 +1,9 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../features/user/domain/i_user_repository.dart';
 import '../../../features/user/domain/state/user_cubit.dart';
 import '../../features/leaderboard/domain/i_leaderboard_repository.dart';
-import '../http/i_http_client.dart';
+// import '../http/i_http_client.dart';
 import '../storage/i_storage_service.dart';
 import '../theme/app_theme.dart';
 

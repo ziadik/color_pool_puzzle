@@ -241,7 +241,6 @@ class _MapEditorState extends State<MapEditor> {
       case WallType.RB:
         return LeftBridgeWOTShadowCP();
       case WallType.N:
-      default:
         return null;
     }
   }
