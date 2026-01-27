@@ -272,7 +272,7 @@ class _ColorDot extends StatelessWidget {
   final Color color;
   final String tooltip;
 
-  const _ColorDot({super.key, required this.color, required this.tooltip});
+  const _ColorDot({required this.color, required this.tooltip});
 
   @override
   Widget build(BuildContext context) {

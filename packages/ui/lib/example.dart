@@ -185,7 +185,7 @@ class _ColorInfo extends StatelessWidget {
   final String label;
   final String hex;
 
-  const _ColorInfo({super.key, required this.color, required this.label, required this.hex});
+  const _ColorInfo({required this.color, required this.label, required this.hex});
 
   @override
   Widget build(BuildContext context) {
