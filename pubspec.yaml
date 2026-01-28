@@ -11,10 +11,13 @@ dependencies:
   flutter:
     sdk: flutter
   http: any
-  ui:
-    path: packages/ui
-  levels:
-    path: packages/levels
+  # ui:
+  #   path: packages/ui
+  # levels:
+  #   path: packages/levels
+  game_q:
+    path: packages/game_q    
+
   shared_preferences: ^2.5.3
   flutter_localizations:
     sdk: flutter

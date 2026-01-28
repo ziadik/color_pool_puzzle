@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ui/example.dart';
+import 'package:game_q/game_q.dart';
 
 import '../../app/ext/context_ext.dart';
 import '../../main.dart';
