@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:game_q/game_screen.dart';
 
 import 'app/di/depends.dart';
 import 'app/di/di_container.dart';
@@ -11,7 +12,7 @@ import 'features/init_app/data/initialization.dart';
 import 'features/leaderboard/presentation/leaderboard_screen.dart';
 import 'features/main_menu/main_menu_screen.dart';
 import 'features/user/presentation/user_screen.dart';
-import 'features/game/game_screen.dart';
+
 import 'l10n/gen/app_localizations.dart';
 
 part 'app/game_router.dart';
