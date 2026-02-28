@@ -12,8 +12,11 @@ dependencies:
     sdk: flutter
   ui:
     path: ../ui
+  map_editor:
+    path: ../map_editor
   levels:
     path: ../levels
+  shared_preferences: ^2.0.12
 
 dev_dependencies:
   flutter_test:
