@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:game_q/app.dart';
+import 'package:game_q/game/level_manager.dart';
 import 'package:game_q/game_screen.dart';
+import 'package:game_q/models/app_state.dart';
+import 'package:game_q/services/storage_service.dart';
 
 import 'app/di/depends.dart';
 import 'app/di/di_container.dart';
@@ -17,38 +21,53 @@ import 'l10n/gen/app_localizations.dart';
 
 part 'app/game_router.dart';
 
-void main() => appZone(() async {
-  // Splash screen
-  await DotEnv().load(fileName: ".env");
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-  final initializationProgress = ValueNotifier<({int progress, String message})>((progress: 0, message: ''));
-  /* runApp(SplashScreen(progress: initializationProgress)); */
-  $initializeApp(
-    onProgress: (progress, message) => initializationProgress.value = (progress: progress, message: message),
-    onSuccess: (depends) => runApp(_MyApp(depends: depends)),
-    onError: (error, stackTrace) {
-      runApp(AppError(error: error, stackTrace: stackTrace));
-      ErrorUtil.logError(error, stackTrace).ignore();
-    },
-  ).ignore();
-  // // Инициализируем Flutter binding
-  // WidgetsFlutterBinding.ensureInitialized();
+  final levelManager = LevelManager();
+  await levelManager.initialize();
 
-  // // Создаем экземпляр класса Depends
-  // final Depends depends = Depends();
-  // try {
-  //   // Инициализируем зависимости
-  //   await depends.init();
-  //   // В случае успешной инициализации зависимостей
-  //   // запускаем приложение
-  //   // Передаем зависимости в контейнер зависимостей
-  //   runApp(_MyApp(depends: depends));
-  // } on Object catch (error, stackTrace) {
-  //   // В случае ошибки при инициализации зависимостей
-  //   // запускаем приложение с экраном ошибки
-  //   runApp(AppError(error: error, stackTrace: stackTrace));
-  // }
-});
+  // Загружаем начальное состояние
+  final currentLevel = await StorageService.getCurrentLevel();
+  final completedLevels = await StorageService.getCompletedLevels();
+
+  final initialState = AppState(currentLevel: currentLevel, completedLevels: completedLevels, isLoading: false, levelManager: levelManager);
+
+  runApp(QOOXApp(initialState: initialState));
+}
+
+// void main() => appZone(() async {
+//   // Splash screen
+//   await DotEnv().load(fileName: ".env");
+
+//   final initializationProgress = ValueNotifier<({int progress, String message})>((progress: 0, message: ''));
+//   /* runApp(SplashScreen(progress: initializationProgress)); */
+//   $initializeApp(
+//     onProgress: (progress, message) => initializationProgress.value = (progress: progress, message: message),
+//     onSuccess: (depends) => runApp(_MyApp(depends: depends)),
+//     onError: (error, stackTrace) {
+//       runApp(AppError(error: error, stackTrace: stackTrace));
+//       ErrorUtil.logError(error, stackTrace).ignore();
+//     },
+//   ).ignore();
+//   // // Инициализируем Flutter binding
+//   // WidgetsFlutterBinding.ensureInitialized();
+
+//   // // Создаем экземпляр класса Depends
+//   // final Depends depends = Depends();
+//   // try {
+//   //   // Инициализируем зависимости
+//   //   await depends.init();
+//   //   // В случае успешной инициализации зависимостей
+//   //   // запускаем приложение
+//   //   // Передаем зависимости в контейнер зависимостей
+//   //   runApp(_MyApp(depends: depends));
+//   // } on Object catch (error, stackTrace) {
+//   //   // В случае ошибки при инициализации зависимостей
+//   //   // запускаем приложение с экраном ошибки
+//   //   runApp(AppError(error: error, stackTrace: stackTrace));
+//   // }
+// });
 
 class _MyApp extends StatefulWidget {
   const _MyApp({required this.depends});
