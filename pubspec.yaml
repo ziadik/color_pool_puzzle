@@ -1,19 +1,15 @@
 name: color_pool_puzzle
-description: "A new Flutter project."
+description: "Color Pool Puzzle"
 publish_to: 'none'
 version: 0.1.0
 
 environment:
-  sdk: ^3.10.0
+  sdk: ^3.11.3
 
 dependencies:
   flutter:
     sdk: flutter
-  http: any
-  shared_preferences: ^2.5.3
-  flutter_localizations:
-    sdk: flutter
-  intl: ^0.20.2
+
 
 dev_dependencies:
   flutter_test:
@@ -24,5 +20,5 @@ flutter:
   uses-material-design: true
   generate: true
   
-  assets:
-    - assets/icon_settings.json
+  
+
