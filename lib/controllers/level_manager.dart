@@ -71,11 +71,9 @@ class LevelManager extends ChangeNotifier {
   void _loadAllLevels() {
     print('🔄 Loading levels...');
 
-    // Load numeric data (balls and holes)
     _levelInfos.addAll(LevelData.parseLevels());
     print('✅ Loaded ${_levelInfos.length} numeric level definitions');
 
-    // Create levels by combining walls from LevelMaps and items from LevelData
     for (int i = 0; i < LevelMaps.levels.length && i < _levelInfos.length; i++) {
       final levelInfo = _levelInfos[i];
       final wallsData = LevelMaps.getCleanedLevel(i);

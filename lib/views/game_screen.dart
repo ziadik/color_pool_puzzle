@@ -91,15 +91,26 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     }
   }
 
-  void _showWinDialog() {
+  void _showWinDialog() async {
     final settings = Provider.of<SettingsManager>(context, listen: false);
     final levelManager = Provider.of<LevelManager>(context, listen: false);
 
-    settings.saveRecord(levelManager.currentLevelIndex, _engine.movesCount);
+    print('🏆 Level completed!');
+    print('  Level index: ${levelManager.currentLevelIndex}');
+    print('  Moves: ${_engine.movesCount}');
+
+    await settings.saveRecord(levelManager.currentLevelIndex, _engine.movesCount);
+
+    print('✅ Record saved, updating max opened level');
 
     if (levelManager.currentLevelIndex + 1 > settings.maxOpenedLevel) {
       settings.maxOpenedLevel = levelManager.currentLevelIndex + 1;
+      print('  Max opened level updated to: ${levelManager.currentLevelIndex + 1}');
     }
+
+    // Проверим, сохранилась ли запись
+    final savedRecord = settings.getRecord(levelManager.currentLevelIndex);
+    print('  Saved record: ${savedRecord?.moves} moves');
 
     showDialog(
       context: context,

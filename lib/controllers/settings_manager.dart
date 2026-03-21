@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,7 +48,6 @@ class SettingsManager extends ChangeNotifier {
   set currentLocale(Locale locale) {
     _currentLocale = locale;
     _prefs.setString('language_code', locale.languageCode);
-    // Обновляем язык в Localization
     Localization.setLanguage(locale.languageCode);
     notifyListeners();
   }
@@ -72,12 +72,10 @@ class SettingsManager extends ChangeNotifier {
     _vibrationStrength = _prefs.getInt('vibration_strength') ?? 1;
     _maxOpenedLevel = _prefs.getInt('max_opened_level') ?? 0;
 
-    // Загружаем язык
     final languageCode = _prefs.getString('language_code');
     if (languageCode != null) {
       _currentLocale = Locale(languageCode);
     } else {
-      // Определяем системный язык
       final systemLocale = PlatformDispatcher.instance.locale;
       if (systemLocale.languageCode == 'ru' || systemLocale.languageCode == 'uk' || systemLocale.languageCode == 'kk' || systemLocale.languageCode == 'be') {
         _currentLocale = Locale(systemLocale.languageCode);
@@ -86,7 +84,6 @@ class SettingsManager extends ChangeNotifier {
       }
     }
 
-    // Устанавливаем язык в Localization
     Localization.setLanguage(_currentLocale.languageCode);
 
     final themeModeIndex = _prefs.getInt('theme_mode');
@@ -100,25 +97,60 @@ class SettingsManager extends ChangeNotifier {
 
   Future<void> _loadRecords() async {
     final recordsString = _prefs.getString('records');
+    print('📖 Loading records from SharedPreferences: $recordsString');
+
     if (recordsString != null) {
       try {
-        // Простая реализация - в реальном проекте используйте jsonDecode
+        final Map<String, dynamic> decoded = jsonDecode(recordsString);
+        print('📖 Decoded: $decoded');
         _records = {};
+        decoded.forEach((key, value) {
+          final levelIndex = int.parse(key);
+          _records[levelIndex] = LevelRecord.fromJson(value);
+          print('📖 Loaded level $levelIndex: ${_records[levelIndex]!.moves} moves');
+        });
       } catch (e) {
-        print('Error loading records: $e');
+        print('❌ Error loading records: $e');
+        _records = {};
       }
+    } else {
+      print('📖 No records found in SharedPreferences');
+      _records = {};
     }
-    notifyListeners();
   }
 
-  void saveRecord(int levelIndex, int moves) {
+  Future<void> saveRecord(int levelIndex, int moves) async {
+    print('📝 Saving record - Level: $levelIndex, Moves: $moves');
+
     final newRecord = LevelRecord(moves: moves, date: DateTime.now());
     final existing = _records[levelIndex];
 
+    print('📝 Existing record: ${existing?.moves}');
+
     if (existing == null || moves < existing.moves) {
+      print('✅ Saving new record (better or first)');
       _records[levelIndex] = newRecord;
-      // В реальном проекте сохраняйте в JSON
+      await _saveRecords();
+      print('✅ Records saved to SharedPreferences');
+      print('📊 Current records: $_records');
       notifyListeners();
+    } else {
+      print('❌ Not saving - existing record is better');
+    }
+  }
+
+  Future<void> _saveRecords() async {
+    try {
+      final Map<String, dynamic> toSave = {};
+      _records.forEach((key, value) {
+        toSave[key.toString()] = value.toJson();
+      });
+      final jsonString = jsonEncode(toSave);
+      print('💾 Saving records JSON: $jsonString');
+      await _prefs.setString('records', jsonString);
+      print('✅ Records saved successfully');
+    } catch (e) {
+      print('❌ Error saving records: $e');
     }
   }
 
@@ -126,11 +158,11 @@ class SettingsManager extends ChangeNotifier {
     return _records[levelIndex];
   }
 
-  void resetProgress() {
+  Future<void> resetProgress() async {
     _records.clear();
     _maxOpenedLevel = 0;
-    _prefs.remove('records');
-    _prefs.remove('max_opened_level');
+    await _prefs.remove('records');
+    await _prefs.remove('max_opened_level');
     notifyListeners();
   }
 

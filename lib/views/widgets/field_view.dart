@@ -270,12 +270,12 @@ class GridPainter extends CustomPainter {
 
     for (int i = 0; i < cols; i++) {
       final x = i * cellSize;
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height - 100), paint);
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
     }
 
     for (int i = 0; i < rows; i++) {
       final y = i * cellSize;
-      canvas.drawLine(Offset(0, y), Offset(size.width - 100, y), paint);
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
   }
 
