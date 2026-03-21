@@ -89,8 +89,8 @@ class _FieldViewState extends State<FieldView> {
             _touchStart = null;
           },
           child: Container(
-            width: totalWidth - 100,
-            height: totalHeight - 100,
+            width: totalWidth,
+            height: totalHeight,
             decoration: BoxDecoration(
               color: AppColors.fieldBackground(context),
             ),
@@ -136,15 +136,16 @@ class _FieldViewState extends State<FieldView> {
 
   List<Widget> _buildBalls(int rows, int cols, double totalWidth, double totalHeight) {
     final widgets = <Widget>[];
-
+    final wallOffsetX = _elementSize / 1.95;
+    final wallOffsetY = _elementSize / 1.44;
     for (int row = 0; row < rows; row++) {
       for (int col = 0; col < cols; col++) {
         final item = widget.engine.field[row][col];
         if (item is Ball) {
           widgets.add(
             Positioned(
-              left: col * _elementSize,
-              top: row * _elementSize,
+              left: col * _elementSize + wallOffsetX,
+              top: row * _elementSize + wallOffsetY,
               child: SizedBox(
                 width: _elementSize,
                 height: _elementSize,
@@ -166,15 +167,16 @@ class _FieldViewState extends State<FieldView> {
 
   List<Widget> _buildHoles(int rows, int cols, double totalWidth, double totalHeight) {
     final widgets = <Widget>[];
-
+    final wallOffsetX = _elementSize / 1.95;
+    final wallOffsetY = _elementSize / 1.44;
     for (int row = 0; row < rows; row++) {
       for (int col = 0; col < cols; col++) {
         final item = widget.engine.field[row][col];
         if (item is Hole) {
           widgets.add(
             Positioned(
-              left: col * _elementSize,
-              top: row * _elementSize,
+              left: col * _elementSize + wallOffsetX,
+              top: row * _elementSize + wallOffsetY,
               child: SizedBox(
                 width: _elementSize,
                 height: _elementSize,
@@ -203,8 +205,8 @@ class _FieldViewState extends State<FieldView> {
     final gameBoard = GameBoard.fromTextLayout(cleanedLevel);
     if (gameBoard == null) return widgets;
 
-    final wallOffsetX = _elementSize / 1.95;
-    final wallOffsetY = _elementSize / 1.44;
+    final wallOffsetX = 0; //_elementSize / 1.95;
+    final wallOffsetY = 0; //_elementSize / 1.44;
     final wallSize = _elementSize + 4;
     final wallOffsetDraw = 0.0;
 
@@ -263,18 +265,20 @@ class GridPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final wallOffsetX = cellSize / 1.95;
+    final wallOffsetY = cellSize / 1.44;
     final paint = Paint()
       ..color = gridColor
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
 
     for (int i = 0; i < cols; i++) {
-      final x = i * cellSize;
+      final x = i * cellSize + wallOffsetX;
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
     }
 
     for (int i = 0; i < rows; i++) {
-      final y = i * cellSize;
+      final y = i * cellSize + wallOffsetY;
       canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
   }

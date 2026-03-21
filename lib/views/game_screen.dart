@@ -36,6 +36,16 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _initGame();
     _soundManager.init();
+
+    // Синхронизируем maxOpenedLevel при загрузке
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final settings = Provider.of<SettingsManager>(context, listen: false);
+      final levelManager = Provider.of<LevelManager>(context, listen: false);
+      if (levelManager.maxOpenedLevel != settings.maxOpenedLevel) {
+        print('🔄 Syncing maxOpenedLevel: ${settings.maxOpenedLevel}');
+        levelManager.maxOpenedLevel = settings.maxOpenedLevel;
+      }
+    });
   }
 
   @override
@@ -98,19 +108,22 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     print('🏆 Level completed!');
     print('  Level index: ${levelManager.currentLevelIndex}');
     print('  Moves: ${_engine.movesCount}');
+    print('  Current maxOpenedLevel in SettingsManager: ${settings.maxOpenedLevel}');
+    print('  Current maxOpenedLevel in LevelManager: ${levelManager.maxOpenedLevel}');
 
     await settings.saveRecord(levelManager.currentLevelIndex, _engine.movesCount);
 
-    print('✅ Record saved, updating max opened level');
-
-    if (levelManager.currentLevelIndex + 1 > settings.maxOpenedLevel) {
-      settings.maxOpenedLevel = levelManager.currentLevelIndex + 1;
-      print('  Max opened level updated to: ${levelManager.currentLevelIndex + 1}');
+    // Обновляем maxOpenedLevel
+    final nextLevelIndex = levelManager.currentLevelIndex + 1;
+    if (nextLevelIndex > settings.maxOpenedLevel) {
+      print('📈 Updating maxOpenedLevel to $nextLevelIndex');
+      settings.maxOpenedLevel = nextLevelIndex;
+      levelManager.maxOpenedLevel = nextLevelIndex;
     }
 
-    // Проверим, сохранилась ли запись
-    final savedRecord = settings.getRecord(levelManager.currentLevelIndex);
-    print('  Saved record: ${savedRecord?.moves} moves');
+    // Проверяем после обновления
+    print('  After update - SettingsManager maxOpenedLevel: ${settings.maxOpenedLevel}');
+    print('  After update - LevelManager maxOpenedLevel: ${levelManager.maxOpenedLevel}');
 
     showDialog(
       context: context,
@@ -163,10 +176,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     final targetIndex = levelManager.currentLevelIndex - 1;
 
     if (targetIndex < 0) return;
-    if (targetIndex > levelManager.maxOpenedLevel) {
-      _showLevelLockedDialog();
-      return;
-    }
+    //if (targetIndex > levelManager.maxOpenedLevel) {
+    //  _showLevelLockedDialog();
+    //  return;
+    //}
 
     if (_hasUnsavedChanges) {
       final confirmed = await _showNavigationDialog('previous');

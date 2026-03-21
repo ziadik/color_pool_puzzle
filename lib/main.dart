@@ -20,6 +20,10 @@ void main() async {
     // Загрузка сохраненных настроек
     await settingsManager.loadSettings();
 
+    print('✅ Settings loaded');
+    print('  Max opened level: ${settingsManager.maxOpenedLevel}');
+    print('  Records count: ${settingsManager.records.length}');
+
     runApp(
       MultiProvider(
         providers: [
