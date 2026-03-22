@@ -145,7 +145,8 @@ class _FieldViewState extends State<FieldView> {
     );
   }
 
-  List<Widget> _buildBalls(int rows, int cols, double totalWidth, double totalHeight) {
+  List<Widget> _buildBalls(
+      int rows, int cols, double totalWidth, double totalHeight) {
     final widgets = <Widget>[];
     final wallOffsetX = _elementSize / 1.95;
     final wallOffsetY = _elementSize / 1.44;
@@ -176,7 +177,8 @@ class _FieldViewState extends State<FieldView> {
     return widgets;
   }
 
-  List<Widget> _buildHoles(int rows, int cols, double totalWidth, double totalHeight) {
+  List<Widget> _buildHoles(
+      int rows, int cols, double totalWidth, double totalHeight) {
     final widgets = <Widget>[];
     final wallOffsetX = _elementSize / 1.95;
     final wallOffsetY = _elementSize / 1.44;
@@ -207,7 +209,13 @@ class _FieldViewState extends State<FieldView> {
     return widgets;
   }
 
-  List<Widget> _buildWalls(int rows, int cols, double totalWidth, double totalHeight, {required bool isBottom}) {
+  List<Widget> _buildWalls(
+    int rows,
+    int cols,
+    double totalWidth,
+    double totalHeight, {
+    required bool isBottom,
+  }) {
     final widgets = <Widget>[];
 
     final levelManager = Provider.of<LevelManager>(context, listen: false);
@@ -219,18 +227,17 @@ class _FieldViewState extends State<FieldView> {
     final wallOffsetX = 0; //_elementSize / 1.95;
     final wallOffsetY = 0; //_elementSize / 1.44;
     final wallSize = _elementSize + 4;
-    final wallOffsetDraw = 0.0;
 
     for (int row = 0; row < rows; row++) {
       for (int col = 0; col < cols; col++) {
         final wallType = gameBoard.getWallType(col, row);
-
         if (wallType == WallType.N) continue;
 
-        final shouldDraw = isBottom ? wallType.isFirstLayer : wallType.isSecondLayer;
+        final shouldDraw =
+            isBottom ? wallType.isFirstLayer : wallType.isSecondLayer;
         if (!shouldDraw) continue;
 
-        final painter = getWallPainter(wallType);
+        final painter = getWallPainter(wallType, context);
         if (painter == null) continue;
 
         widgets.add(
@@ -239,16 +246,13 @@ class _FieldViewState extends State<FieldView> {
             top: row * _elementSize - wallOffsetY,
             child: Transform(
               alignment: Alignment.center,
-              transform: Matrix4.identity()..scale(wallType.needsFlipX ? -1.0 : 1.0, 1.0),
+              transform: Matrix4.identity()
+                ..scale(wallType.needsFlipX ? -1.0 : 1.0, 1.0),
               child: SizedBox(
                 width: wallSize,
                 height: wallSize,
                 child: CustomPaint(
-                  painter: WallCustomPainter(
-                    painter: painter,
-                    offset: wallOffsetDraw,
-                    context: context,
-                  ),
+                  painter: painter,
                 ),
               ),
             ),
@@ -349,38 +353,42 @@ class HolePainter extends CustomPainter {
     final paint = Paint()
       ..color = color.withOpacity(0.3)
       ..style = PaintingStyle.fill;
-    canvas.drawRRect(RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)), paint);
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)),
+        paint);
 
     final strokePaint = Paint()
       ..color = color
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
-    canvas.drawRRect(RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)), strokePaint);
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)),
+        strokePaint);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-class WallCustomPainter extends CustomPainter {
-  final WallPainter painter;
-  final double offset;
-  final BuildContext context;
+// class WallCustomPainter extends CustomPainter {
+//   final WallPainter painter;
+//   final double offset;
+//   final BuildContext context;
 
-  WallCustomPainter({
-    required this.painter,
-    required this.offset,
-    required this.context,
-  });
+//   WallCustomPainter({
+//     required this.painter,
+//     required this.offset,
+//     required this.context,
+//   });
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.save();
-    canvas.translate(offset, offset);
-    painter.paint(canvas, size, context);
-    canvas.restore();
-  }
+//   @override
+//   void paint(Canvas canvas, Size size) {
+//     canvas.save();
+//     canvas.translate(offset, offset);
+//     painter.paint(canvas, size, context);
+//     canvas.restore();
+//   }
 
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
+//   @override
+//   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+// }
