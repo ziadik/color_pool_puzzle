@@ -53,6 +53,9 @@ class _FieldViewState extends State<FieldView> {
           onPanEnd: (details) {
             if (_touchStart == null) return;
 
+            final WallOffsetX = _elementSize / 1.95;
+            final WallOffsetY = _elementSize / 1.44;
+
             final end = details.localPosition;
             final dx = end.dx - _touchStart!.dx;
             final dy = end.dy - _touchStart!.dy;
@@ -77,6 +80,14 @@ class _FieldViewState extends State<FieldView> {
 
             final col = (adjustedX / _elementSize).floor();
             final row = (adjustedY / _elementSize).floor();
+
+            // print('🎯 Touch detection:');
+            // print('  Touch position: (${_touchStart!.dx}, ${_touchStart!.dy})');
+            // print('  Offset: ($offsetX, $offsetY)');
+            // print('  Wall offset: ($WallOffsetX, $WallOffsetY)');
+            // print('  Adjusted: ($adjustedX, $adjustedY)');
+            print('  Cell: ($col, $row)');
+            // print('  Range: rows=0-${rows - 1}, cols=0-${cols - 1}');
 
             if (row >= 0 && row < rows && col >= 0 && col < cols) {
               final success = widget.engine.makeTurn(col, row, direction);
