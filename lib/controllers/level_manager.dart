@@ -1,3 +1,4 @@
+import 'package:color_pool_puzzle/controllers/settings_manager.dart';
 import 'package:flutter/material.dart';
 import '../models/level.dart';
 import '../models/item.dart';
@@ -29,6 +30,14 @@ class LevelManager extends ChangeNotifier {
   set maxOpenedLevel(int value) {
     if (value > _maxOpenedLevel) {
       _maxOpenedLevel = value;
+      notifyListeners();
+    }
+  }
+
+  void syncWithSettings(SettingsManager settings) {
+    if (settings.maxOpenedLevel > _maxOpenedLevel) {
+      _maxOpenedLevel = settings.maxOpenedLevel;
+      _currentLevelIndex = _maxOpenedLevel;
       notifyListeners();
     }
   }

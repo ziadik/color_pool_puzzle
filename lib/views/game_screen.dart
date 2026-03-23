@@ -336,7 +336,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       backgroundColor: AppColors.backgroundColor,
       body: OrientationBuilder(
         builder: (context, orientation) {
-          return orientation == Orientation.portrait ? _buildPortraitLayout(levelManager) : _buildLandscapeLayout(levelManager);
+          return _buildPortraitLayout(levelManager);
         },
       ),
     );
@@ -406,67 +406,6 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                   onPressed: _openLeaderboard,
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLandscapeLayout(LevelManager levelManager) {
-    return SafeArea(
-      child: Row(
-        children: [
-          Container(
-            width: 100,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GradientButton(
-                  icon: Icons.refresh,
-                  onPressed: _showRestartDialog,
-                ),
-                const SizedBox(height: 20),
-                GradientButton(
-                  icon: CupertinoIcons.chevron_up,
-                  onPressed: _previousLevel,
-                  isEnabled: levelManager.currentLevelIndex > 0,
-                ),
-                const SizedBox(height: 16),
-                LevelLabel(
-                  levelNumber: levelManager.currentLevelIndex + 1,
-                ),
-                const SizedBox(height: 16),
-                GradientButton(
-                  icon: CupertinoIcons.chevron_down,
-                  onPressed: _nextLevelNavigation,
-                  isEnabled: levelManager.currentLevelIndex + 1 <= levelManager.maxOpenedLevel,
-                ),
-                const SizedBox(height: 20),
-                GradientButton(
-                  icon: Icons.settings,
-                  onPressed: _openSettings,
-                ),
-                const SizedBox(height: 20),
-                GradientButton(
-                  icon: Icons.lightbulb_outline,
-                  onPressed: _showHint,
-                ),
-                const SizedBox(height: 20),
-                GradientButton(
-                  icon: Icons.emoji_events,
-                  onPressed: _openLeaderboard,
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Center(
-              child: FieldView(
-                engine: _engine,
-                onMove: _onMove,
-              ),
             ),
           ),
         ],

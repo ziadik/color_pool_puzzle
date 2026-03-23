@@ -5,6 +5,7 @@ import '../../utils/app_colors.dart';
 // Базовый класс для всех стен с передачей context
 abstract class BaseWallPainter extends CustomPainter {
   final BuildContext context;
+  final shadowInset = 1.9;
 
   BaseWallPainter(this.context);
 
@@ -41,7 +42,7 @@ class TopWallPainter extends BaseWallPainter {
       ..style = PaintingStyle.fill
       ..color = AppColors.wallShadow(context);
     canvas.drawRect(
-      Rect.fromLTWH(0, size.height * 0.67, size.width, size.height * 0.15),
+      Rect.fromLTWH(shadowInset, size.height * 0.67, size.width - shadowInset * 2, size.height * 0.15),
       shadowPaint,
     );
   }
@@ -103,7 +104,7 @@ class TopLeftOutAnglePainter extends BaseWallPainter {
       ..style = PaintingStyle.fill
       ..color = AppColors.wallShadow(context);
     final shadowPath = Path()
-      ..moveTo(0, size.height * 0.65)
+      ..moveTo(shadowInset, size.height * 0.65)
       ..lineTo(size.width * 0.32, size.height * 0.65)
       ..cubicTo(
         size.width * 0.419411,
@@ -122,7 +123,7 @@ class TopLeftOutAnglePainter extends BaseWallPainter {
         size.width * 0.32,
         size.height * 0.82,
       )
-      ..lineTo(0, size.height * 0.82)
+      ..lineTo(shadowInset, size.height * 0.82)
       ..close();
     canvas.drawPath(shadowPath, shadowPaint);
 
@@ -187,7 +188,7 @@ class TopLeftInAnglePainter extends BaseWallPainter {
       ..style = PaintingStyle.fill
       ..color = AppColors.wallShadow(context);
     final shadowPath = Path()
-      ..moveTo(size.width, size.height * 0.82)
+      ..moveTo(size.width - shadowInset, size.height * 0.82)
       ..lineTo(size.width * 0.68, size.height * 0.82)
       ..cubicTo(
         size.width * 0.580589,
@@ -206,7 +207,7 @@ class TopLeftInAnglePainter extends BaseWallPainter {
         size.width * 0.68,
         size.height * 0.65,
       )
-      ..lineTo(size.width, size.height * 0.65)
+      ..lineTo(size.width - shadowInset, size.height * 0.65)
       ..close();
     canvas.drawPath(shadowPath, shadowPaint);
 
@@ -396,7 +397,7 @@ class LeftBridgeShadowPainter extends BaseWallPainter {
       ..style = PaintingStyle.fill
       ..color = AppColors.wallShadow(context);
     final shadowPath = Path()
-      ..moveTo(size.width, size.height * 0.82)
+      ..moveTo(size.width - shadowInset, size.height * 0.82)
       ..lineTo(size.width * 0.68, size.height * 0.82)
       ..cubicTo(
         size.width * 0.580589,
@@ -415,7 +416,7 @@ class LeftBridgeShadowPainter extends BaseWallPainter {
         size.width * 0.68,
         size.height * 0.65,
       )
-      ..lineTo(size.width, size.height * 0.65)
+      ..lineTo(size.width - shadowInset, size.height * 0.65)
       ..close();
     canvas.drawPath(shadowPath, shadowPaint);
   }

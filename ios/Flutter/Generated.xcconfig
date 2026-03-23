@@ -1,8 +1,8 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=/Users/dmitriiziadik/flutter
-FLUTTER_APPLICATION_PATH=/Users/dmitriiziadik/Projects/flutter/color_pool_puzzle
+FLUTTER_ROOT=C:\flutter
+FLUTTER_APPLICATION_PATH=C:\Projects\flutter\color_pool_puzzle
 COCOAPODS_PARALLEL_CODE_SIGN=true
-FLUTTER_TARGET=lib/main.dart
+FLUTTER_TARGET=lib\main.dart
 FLUTTER_BUILD_DIR=build
 FLUTTER_BUILD_NAME=1.0.0
 FLUTTER_BUILD_NUMBER=1.0.0

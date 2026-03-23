@@ -26,8 +26,15 @@ class FieldView extends StatefulWidget {
 }
 
 class _FieldViewState extends State<FieldView> {
+  final GlobalKey _containerKey = GlobalKey();
   double _elementSize = 0;
-  Offset? _touchStart;
+  Offset? _dragStart;
+  Offset? _dragEnd;
+  bool _isDragging = false;
+
+  // Смещение для отрисовки элементов (шары, стены)
+  double get _wallOffsetX => _elementSize / 1.95;
+  double get _wallOffsetY => _elementSize / 1.44;
 
   @override
   Widget build(BuildContext context) {
@@ -46,98 +53,64 @@ class _FieldViewState extends State<FieldView> {
         final totalWidth = _elementSize * cols;
         final totalHeight = _elementSize * rows;
 
-        return GestureDetector(
-          onPanStart: (details) {
-            _touchStart = details.localPosition;
-          },
-          onPanEnd: (details) {
-            if (_touchStart == null) return;
-
-            final WallOffsetX = _elementSize / 1.95;
-            final WallOffsetY = _elementSize / 1.44;
-
-            final end = details.localPosition;
-            final dx = end.dx - _touchStart!.dx;
-            final dy = end.dy - _touchStart!.dy;
-
-            final threshold = _elementSize / 2;
-            final distance = vector.Vector2(dx, dy).length;
-
-            if (distance < threshold) return;
-
-            Direction direction;
-            if (dx.abs() > dy.abs()) {
-              direction = dx > 0 ? Direction.right : Direction.left;
-            } else {
-              direction = dy > 0 ? Direction.down : Direction.up;
-            }
-
-            final offsetX = (constraints.maxWidth - totalWidth) / 2;
-            final offsetY = (constraints.maxHeight - totalHeight) / 2;
-
-            final adjustedX = _touchStart!.dx - offsetX;
-            final adjustedY = _touchStart!.dy - offsetY;
-
-            final col = (adjustedX / _elementSize).floor();
-            final row = (adjustedY / _elementSize).floor();
-
-            // print('🎯 Touch detection:');
-            // print('  Touch position: (${_touchStart!.dx}, ${_touchStart!.dy})');
-            // print('  Offset: ($offsetX, $offsetY)');
-            // print('  Wall offset: ($WallOffsetX, $WallOffsetY)');
-            // print('  Adjusted: ($adjustedX, $adjustedY)');
-            print('  Cell: ($col, $row)');
-            // print('  Range: rows=0-${rows - 1}, cols=0-${cols - 1}');
-
-            if (row >= 0 && row < rows && col >= 0 && col < cols) {
-              final success = widget.engine.makeTurn(col, row, direction);
-              if (success) {
-                widget.onMove();
-                setState(() {});
-              }
-            }
-
-            _touchStart = null;
-          },
+        return Center(
           child: Container(
+            key: _containerKey,
             width: totalWidth,
             height: totalHeight,
             decoration: BoxDecoration(
               color: AppColors.fieldBackground(context),
             ),
-            child: Stack(
-              children: [
-                // Grid
-                CustomPaint(
-                  size: Size(totalWidth, totalHeight),
-                  painter: GridPainter(
-                    cols: cols,
-                    rows: rows,
-                    cellSize: _elementSize,
-                    gridColor: AppColors.gridColor(context),
+            child: Listener(
+              onPointerDown: (event) {
+                _dragStart = _getRelativePosition(event.localPosition);
+                _dragEnd = null;
+                _isDragging = false;
+              },
+              onPointerMove: (event) {
+                if (_dragStart != null) {
+                  _isDragging = true;
+                  _dragEnd = _getRelativePosition(event.localPosition);
+                }
+              },
+              onPointerUp: (event) {
+                if (_isDragging && _dragStart != null && _dragEnd != null) {
+                  _handleSwipe(_dragStart!, _dragEnd!);
+                }
+                _dragStart = null;
+                _dragEnd = null;
+                _isDragging = false;
+              },
+              child: Stack(
+                children: [
+                  // Grid
+                  CustomPaint(
+                    size: Size(totalWidth, totalHeight),
+                    painter: GridPainter(
+                      cols: cols,
+                      rows: rows,
+                      cellSize: _elementSize,
+                      gridColor: AppColors.gridColor(context),
+                    ),
                   ),
-                ),
-                // Holes
-                ..._buildHoles(rows, cols, totalWidth, totalHeight),
-                // Bottom walls
-                ..._buildWalls(
-                  rows,
-                  cols,
-                  totalWidth,
-                  totalHeight,
-                  isBottom: true,
-                ),
-                // Balls
-                ..._buildBalls(rows, cols, totalWidth, totalHeight),
-                // Top walls
-                ..._buildWalls(
-                  rows,
-                  cols,
-                  totalWidth,
-                  totalHeight,
-                  isBottom: false,
-                ),
-              ],
+                  // Holes
+                  ..._buildHoles(rows, cols),
+                  // Bottom walls
+                  ..._buildWalls(
+                    rows,
+                    cols,
+                    isBottom: true,
+                  ),
+                  // Balls
+                  ..._buildBalls(rows, cols),
+                  // Top walls
+                  ..._buildWalls(
+                    rows,
+                    cols,
+                    isBottom: false,
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -145,19 +118,116 @@ class _FieldViewState extends State<FieldView> {
     );
   }
 
-  List<Widget> _buildBalls(
-      int rows, int cols, double totalWidth, double totalHeight) {
+  Offset _getRelativePosition(Offset localPosition) {
+    // Получаем позицию контейнера
+    final RenderBox? renderBox = _containerKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return localPosition;
+
+    return Offset(
+      localPosition.dx,
+      localPosition.dy,
+    );
+  }
+
+  // Определяем ячейку по позиции, учитывая смещение для шаров
+  (int row, int col)? _getCellFromPosition(Offset position) {
+    final rows = widget.engine.field.length;
+    final cols = widget.engine.field[0].length;
+
+    // Корректируем позицию, вычитая смещение, так как шары и стены рисуются со смещением
+    // Пользователь свайпает по шару, который находится со смещением
+    final adjustedX = position.dx - _wallOffsetX;
+    final adjustedY = position.dy - _wallOffsetY;
+
+    // Проверяем, что позиция внутри поля
+    if (adjustedX < 0 || adjustedX > _elementSize * cols || adjustedY < 0 || adjustedY > _elementSize * rows) {
+      return null;
+    }
+
+    // Вычисляем координаты ячейки
+    final col = (adjustedX / _elementSize).floor();
+    final row = (adjustedY / _elementSize).floor();
+
+    // Проверяем границы
+    if (row >= 0 && row < rows && col >= 0 && col < cols) {
+      return (row, col);
+    }
+
+    return null;
+  }
+
+  void _handleSwipe(Offset start, Offset end) {
+    final dx = end.dx - start.dx;
+    final dy = end.dy - start.dy;
+
+    // Минимальное расстояние для определения свайпа
+    final minDistance = _elementSize / 3;
+    final distance = vector.Vector2(dx, dy).length;
+
+    if (distance < minDistance) return;
+
+    // Определяем направление
+    Direction direction;
+    if (dx.abs() > dy.abs()) {
+      direction = dx > 0 ? Direction.right : Direction.left;
+    } else {
+      direction = dy > 0 ? Direction.down : Direction.up;
+    }
+
+    // Получаем координаты ячейки, где начался свайп (с учетом смещения)
+    final cell = _getCellFromPosition(start);
+    if (cell == null) {
+      print('Cell not found at position: $start');
+      return;
+    }
+
+    final (row, col) = cell;
+    final rows = widget.engine.field.length;
+    final cols = widget.engine.field[0].length;
+
+    print('=== Swipe Debug ===');
+    print('Start: $start, End: $end');
+    print('Adjusted start: (${start.dx - _wallOffsetX}, ${start.dy - _wallOffsetY})');
+    print('Direction: $direction');
+    print('Cell: ($col, $row)');
+    print('Element size: $_elementSize');
+    print('Wall offset: ($_wallOffsetX, $_wallOffsetY)');
+
+    if (row >= 0 && row < rows && col >= 0 && col < cols) {
+      final success = widget.engine.makeTurn(col, row, direction);
+      if (success) {
+        widget.onMove();
+        setState(() {});
+      } else {
+        _showInvalidMoveFeedback();
+      }
+    } else {
+      print('Cell out of bounds!');
+      _showInvalidMoveFeedback();
+    }
+  }
+
+  void _showInvalidMoveFeedback() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Невозможно переместить шар в этом направлении'),
+        duration: Duration(milliseconds: 500),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  List<Widget> _buildBalls(int rows, int cols) {
     final widgets = <Widget>[];
-    final wallOffsetX = _elementSize / 1.95;
-    final wallOffsetY = _elementSize / 1.44;
+
     for (int row = 0; row < rows; row++) {
       for (int col = 0; col < cols; col++) {
         final item = widget.engine.field[row][col];
         if (item is Ball) {
           widgets.add(
             Positioned(
-              left: col * _elementSize + wallOffsetX,
-              top: row * _elementSize + wallOffsetY,
+              left: col * _elementSize + _wallOffsetX,
+              top: row * _elementSize + _wallOffsetY,
               child: SizedBox(
                 width: _elementSize,
                 height: _elementSize,
@@ -177,19 +247,17 @@ class _FieldViewState extends State<FieldView> {
     return widgets;
   }
 
-  List<Widget> _buildHoles(
-      int rows, int cols, double totalWidth, double totalHeight) {
+  List<Widget> _buildHoles(int rows, int cols) {
     final widgets = <Widget>[];
-    final wallOffsetX = _elementSize / 1.95;
-    final wallOffsetY = _elementSize / 1.44;
+
     for (int row = 0; row < rows; row++) {
       for (int col = 0; col < cols; col++) {
         final item = widget.engine.field[row][col];
         if (item is Hole) {
           widgets.add(
             Positioned(
-              left: col * _elementSize + wallOffsetX,
-              top: row * _elementSize + wallOffsetY,
+              left: col * _elementSize + _wallOffsetX,
+              top: row * _elementSize + _wallOffsetY,
               child: SizedBox(
                 width: _elementSize,
                 height: _elementSize,
@@ -211,9 +279,7 @@ class _FieldViewState extends State<FieldView> {
 
   List<Widget> _buildWalls(
     int rows,
-    int cols,
-    double totalWidth,
-    double totalHeight, {
+    int cols, {
     required bool isBottom,
   }) {
     final widgets = <Widget>[];
@@ -224,8 +290,6 @@ class _FieldViewState extends State<FieldView> {
     final gameBoard = GameBoard.fromTextLayout(cleanedLevel);
     if (gameBoard == null) return widgets;
 
-    final wallOffsetX = 0; //_elementSize / 1.95;
-    final wallOffsetY = 0; //_elementSize / 1.44;
     final wallSize = _elementSize + 4;
 
     for (int row = 0; row < rows; row++) {
@@ -233,8 +297,7 @@ class _FieldViewState extends State<FieldView> {
         final wallType = gameBoard.getWallType(col, row);
         if (wallType == WallType.N) continue;
 
-        final shouldDraw =
-            isBottom ? wallType.isFirstLayer : wallType.isSecondLayer;
+        final shouldDraw = isBottom ? wallType.isFirstLayer : wallType.isSecondLayer;
         if (!shouldDraw) continue;
 
         final painter = getWallPainter(wallType, context);
@@ -242,12 +305,11 @@ class _FieldViewState extends State<FieldView> {
 
         widgets.add(
           Positioned(
-            left: col * _elementSize - wallOffsetX,
-            top: row * _elementSize - wallOffsetY,
+            left: col * _elementSize,
+            top: row * _elementSize,
             child: Transform(
               alignment: Alignment.center,
-              transform: Matrix4.identity()
-                ..scale(wallType.needsFlipX ? -1.0 : 1.0, 1.0),
+              transform: Matrix4.identity()..scale(wallType.needsFlipX ? -1.0 : 1.0, 1.0),
               child: SizedBox(
                 width: wallSize,
                 height: wallSize,
@@ -353,42 +415,15 @@ class HolePainter extends CustomPainter {
     final paint = Paint()
       ..color = color.withOpacity(0.3)
       ..style = PaintingStyle.fill;
-    canvas.drawRRect(
-        RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)),
-        paint);
+    canvas.drawRRect(RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)), paint);
 
     final strokePaint = Paint()
       ..color = color
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
-    canvas.drawRRect(
-        RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)),
-        strokePaint);
+    canvas.drawRRect(RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)), strokePaint);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-
-// class WallCustomPainter extends CustomPainter {
-//   final WallPainter painter;
-//   final double offset;
-//   final BuildContext context;
-
-//   WallCustomPainter({
-//     required this.painter,
-//     required this.offset,
-//     required this.context,
-//   });
-
-//   @override
-//   void paint(Canvas canvas, Size size) {
-//     canvas.save();
-//     canvas.translate(offset, offset);
-//     painter.paint(canvas, size, context);
-//     canvas.restore();
-//   }
-
-//   @override
-//   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-// }

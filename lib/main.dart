@@ -8,9 +8,15 @@ import 'controllers/level_manager.dart';
 import 'views/game_screen.dart';
 import 'utils/app_colors.dart';
 import 'utils/localization.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Принудительно устанавливаем портретную ориентацию
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   try {
     // Инициализация менеджеров
@@ -19,6 +25,8 @@ void main() async {
 
     // Загрузка сохраненных настроек
     await settingsManager.loadSettings();
+    final levelManager = LevelManager();
+    levelManager.syncWithSettings(settingsManager); // Добавить этот вызов
 
     print('✅ Settings loaded');
     print('  Max opened level: ${settingsManager.maxOpenedLevel}');
@@ -28,7 +36,7 @@ void main() async {
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => settingsManager),
-          ChangeNotifierProvider(create: (_) => LevelManager()),
+          ChangeNotifierProvider(create: (_) => levelManager),
         ],
         child: const MyApp(),
       ),
