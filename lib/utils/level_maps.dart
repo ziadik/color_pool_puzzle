@@ -1,9 +1,25 @@
 class LevelMaps {
   static const List<List<String>> levels = [
     // Уровень 0 (1)
-    ["B B B B B B B", "B LIT T T T RIT B", "B LID D D LOD R B", "B B B B L R B", "B B B B L R B", "B B B B LID RID B", "B B B B B B B"],
+    [
+      "B B B B B B B",
+      "B LIT T T T RIT B",
+      "B LID D D LOD R B",
+      "B B B B L R B",
+      "B B B B L R B",
+      "B B B B LID RID B",
+      "B B B B B B B"
+    ],
     // Уровень 1 (2)
-    ["B B LIT RIT B B B", "B LIT LOT ROT T RIT B", "B L N N N ROT RIT", "B L N N N ROD RID", "B LID LOD N N R B", "B B LID D D RID B", "B B B B B B B"],
+    [
+      "B B LIT RIT B B B",
+      "B LIT LOT ROT T RIT B",
+      "B L N N N ROT RIT",
+      "B L N N N ROD RID",
+      "B LID LOD N N R B",
+      "B B LID D D RID B",
+      "B B B B B B B"
+    ],
     // Уровень 2
     [
       "B B B B B B B B B B",
@@ -744,8 +760,8 @@ class LevelMaps {
       "B B L R LID D LOD N N R L R B B",
       "B B L ROT T RIT LID D LOD R L R B B",
       "B B L ROD LOD R LIT T LOT R L R B B",
-      "B LIT LOT ROT LOT ROT LOT N N ROT LOT ROT RIT B",
-      "B LID D D D D D D D D LOD ROD RID B",
+      "B LIT LOT ROT LOT ROT LOT ROD LOD ROT LOT ROT RIT B",
+      "B LID D D D D D RID LID D LOD ROD RID B",
       "B B B B B B B B B B LID RID B B",
     ],
     // Уровень 48 (49)

@@ -664,7 +664,7 @@ class LevelData {
 0 1 0 1 1 1 0 0 0 1 0 1 0
 0 1 0 0 0 1 1 1 0 1 0 1 0
 1 1 0 1 0 1 0 0 0 1 0 1 1
-1 6 0 0 0 0 0 0 0 0 0 2 1
+1 6 0 0 0 0 0 1 0 0 0 2 1
 1 1 1 1 1 1 1 1 1 1 66 1 1
 48
 13 13
@@ -900,7 +900,11 @@ class LevelData {
         if (currentLineIndex >= lines.length) break;
 
         final rowLine = lines[currentLineIndex].trim();
-        final values = rowLine.split(' ').where((s) => s.isNotEmpty).map((s) => int.tryParse(s)).toList();
+        final values = rowLine
+            .split(' ')
+            .where((s) => s.isNotEmpty)
+            .map((s) => int.tryParse(s))
+            .toList();
 
         for (int col = 0; col < width && col < values.length; col++) {
           field[row][col] = values[col];
