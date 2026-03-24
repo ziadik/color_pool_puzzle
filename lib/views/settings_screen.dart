@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:io' show Platform;
 import '../controllers/settings_manager.dart';
+import '../controllers/level_manager.dart';
 import '../services/vibration_manager.dart';
 import '../utils/localization.dart';
 import '../utils/app_colors.dart';
@@ -15,6 +20,27 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final VibrationManager _vibrationManager = VibrationManager();
+  String _appVersion = '';
+  String _buildNumber = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAppInfo();
+  }
+
+  Future<void> _loadAppInfo() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _appVersion = packageInfo.version;
+      _buildNumber = packageInfo.buildNumber;
+    });
+  }
+
+  // Проверка, поддерживается ли вибрация на текущей платформе
+  bool _isVibrationSupported() {
+    return Platform.isAndroid || Platform.isIOS;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +56,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.emoji_events),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LeaderboardScreen()),
-              );
-            },
+            onPressed: () => _openLeaderboard(),
           ),
         ],
       ),
@@ -68,38 +89,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: SwitchListTile(
               title: Text(Localization.getString('soundOn')),
               value: settings.soundEnabled,
-              onChanged: (value) => settings.soundEnabled = value,
+              onChanged: (value) {
+                settings.soundEnabled = value;
+                _applyChanges();
+              },
               activeColor: AppColors.secondaryColor,
             ),
           ),
-          _buildSection(
-            title: Localization.getString('vibration'),
-            children: [
-              SwitchListTile(
-                title: Text(Localization.getString('vibrationEnabled')),
-                value: settings.vibrationEnabled,
-                onChanged: (value) {
-                  settings.vibrationEnabled = value;
-                  if (value) {
-                    _vibrationManager.preview(settings);
-                  }
-                },
-                activeColor: AppColors.secondaryColor,
-              ),
-              ListTile(
-                title: Text(Localization.getString('vibrationStrength')),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(settings.vibrationStrengthDescription()),
-                    const Icon(Icons.chevron_right),
-                  ],
+          // Секция вибрации - показываем только на мобильных устройствах
+          if (_isVibrationSupported())
+            _buildSection(
+              title: Localization.getString('vibration'),
+              children: [
+                SwitchListTile(
+                  title: Text(Localization.getString('vibrationEnabled')),
+                  value: settings.vibrationEnabled,
+                  onChanged: (value) {
+                    settings.vibrationEnabled = value;
+                    if (value) {
+                      _vibrationManager.preview(settings);
+                    }
+                    _applyChanges();
+                  },
+                  activeColor: AppColors.secondaryColor,
                 ),
-                enabled: settings.vibrationEnabled,
-                onTap: settings.vibrationEnabled ? () => _showStrengthDialog(settings) : null,
-              ),
-            ],
-          ),
+                ListTile(
+                  title: Text(Localization.getString('vibrationStrength')),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(settings.vibrationStrengthDescription()),
+                      const Icon(Icons.chevron_right),
+                    ],
+                  ),
+                  enabled: settings.vibrationEnabled,
+                  onTap: settings.vibrationEnabled ? () => _showStrengthDialog(settings) : null,
+                ),
+              ],
+            ),
           _buildSection(
             title: Localization.getString('progress'),
             child: ListTile(
@@ -108,9 +135,151 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onTap: () => _showResetDialog(settings),
             ),
           ),
+          _buildDeveloperSection(),
         ],
       ),
     );
+  }
+
+  Widget _buildDeveloperSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+          child: Text(
+            Localization.getString('developer'),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+        ),
+        Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.person_outline, color: AppColors.secondaryColor),
+                title: Text(Localization.getString('developerName')),
+                subtitle: const Text('Dmitry Ziadik'),
+                onTap: () => _showDeveloperInfo(),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.web, color: AppColors.secondaryColor),
+                title: Text(Localization.getString('website')),
+                subtitle: const Text('https://ziidik.ru'),
+                onTap: () => _launchUrl('https://ziidik.ru'),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.email, color: AppColors.secondaryColor),
+                title: Text(Localization.getString('email')),
+                subtitle: const Text('dmitry.zyadik@gmail.com'),
+                onTap: () => _launchUrl('mailto:dmitry.zyadik@gmail.com'),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.info_outline, color: AppColors.secondaryColor),
+                title: Text(Localization.getString('version')),
+                subtitle: Text('${Localization.getString('version')} $_appVersion${_buildNumber.isNotEmpty ? ' (${Localization.getString('build')} $_buildNumber)' : ''}'),
+                onTap: () => _copyVersionToClipboard(),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+// Добавьте эти методы в класс:
+
+  void _showDeveloperInfo() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(Localization.getString('aboutDeveloper')),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Dmitry Ziadik'),
+            const SizedBox(height: 8),
+            Text(Localization.getString('developerRole')),
+            const SizedBox(height: 16),
+            Text(
+              Localization.getString('developerDescription'),
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(Localization.getString('close')),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _copyVersionToClipboard() async {
+    final versionText = '$_appVersion${_buildNumber.isNotEmpty ? ' (${Localization.getString('build')} $_buildNumber)' : ''}';
+    await Clipboard.setData(ClipboardData(text: versionText));
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(Localization.getString('versionCopied')),
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  Future<void> _launchUrl(String url) async {
+    try {
+      final Uri uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        throw Exception('Could not launch $url');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(Localization.getString('cannotOpenLink')),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _applyChanges() {
+    setState(() {});
+  }
+
+  Future<void> _openLeaderboard() async {
+    final levelManager = Provider.of<LevelManager>(context, listen: false);
+
+    final shouldUpdate = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const LeaderboardScreen()),
+    );
+
+    if (shouldUpdate == true) {
+      Navigator.pop(context, true);
+    }
   }
 
   Widget _buildSection({
@@ -149,7 +318,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: ListView(
             shrinkWrap: true,
             children: Localization.availableLanguages.map((lang) {
-              // lang is Map<String, String>, so we access by keys
               final code = lang['code']!;
               final displayName = lang['displayName']!;
               final isSelected = settings.currentLocale.languageCode == code;
@@ -159,6 +327,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 trailing: isSelected ? const Icon(Icons.check) : null,
                 onTap: () {
                   settings.currentLocale = Locale(code);
+                  _applyChanges();
                   Navigator.pop(context);
                 },
               );
@@ -188,6 +357,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               trailing: settings.currentTheme == ThemeMode.system ? const Icon(Icons.check) : null,
               onTap: () {
                 settings.currentTheme = ThemeMode.system;
+                _applyChanges();
                 Navigator.pop(context);
               },
             ),
@@ -196,6 +366,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               trailing: settings.currentTheme == ThemeMode.light ? const Icon(Icons.check) : null,
               onTap: () {
                 settings.currentTheme = ThemeMode.light;
+                _applyChanges();
                 Navigator.pop(context);
               },
             ),
@@ -204,6 +375,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               trailing: settings.currentTheme == ThemeMode.dark ? const Icon(Icons.check) : null,
               onTap: () {
                 settings.currentTheme = ThemeMode.dark;
+                _applyChanges();
                 Navigator.pop(context);
               },
             ),
@@ -227,6 +399,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onTap: () {
                 settings.vibrationStrength = 0;
                 _vibrationManager.preview(settings);
+                _applyChanges();
                 Navigator.pop(context);
               },
             ),
@@ -236,6 +409,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onTap: () {
                 settings.vibrationStrength = 1;
                 _vibrationManager.preview(settings);
+                _applyChanges();
                 Navigator.pop(context);
               },
             ),
@@ -245,6 +419,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onTap: () {
                 settings.vibrationStrength = 2;
                 _vibrationManager.preview(settings);
+                _applyChanges();
                 Navigator.pop(context);
               },
             ),
@@ -268,6 +443,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           TextButton(
             onPressed: () {
               settings.resetProgress();
+              _applyChanges();
               Navigator.pop(context);
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),

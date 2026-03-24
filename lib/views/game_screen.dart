@@ -49,6 +49,23 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Обновляем при возвращении на экран
+    _syncMaxOpenedLevel();
+  }
+
+  void _syncMaxOpenedLevel() {
+    final settings = Provider.of<SettingsManager>(context, listen: false);
+    final levelManager = Provider.of<LevelManager>(context, listen: false);
+    if (levelManager.maxOpenedLevel != settings.maxOpenedLevel) {
+      print('🔄 Syncing maxOpenedLevel on resume: ${settings.maxOpenedLevel}');
+      levelManager.maxOpenedLevel = settings.maxOpenedLevel;
+      setState(() {});
+    }
+  }
+
+  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _soundManager.dispose();
@@ -176,10 +193,6 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     final targetIndex = levelManager.currentLevelIndex - 1;
 
     if (targetIndex < 0) return;
-    //if (targetIndex > levelManager.maxOpenedLevel) {
-    //  _showLevelLockedDialog();
-    //  return;
-    //}
 
     if (_hasUnsavedChanges) {
       final confirmed = await _showNavigationDialog('previous');
@@ -216,6 +229,28 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       levelManager.currentLevelIndex = targetIndex;
       _initGame();
       setState(() {});
+    }
+  }
+
+  void _navigateToLevel(int levelIndex) {
+    final levelManager = Provider.of<LevelManager>(context, listen: false);
+    final settings = Provider.of<SettingsManager>(context, listen: false);
+
+    // Проверяем, доступен ли уровень
+    if (levelIndex <= settings.maxOpenedLevel && levelIndex < levelManager.totalLevels) {
+      if (_hasUnsavedChanges) {
+        _showNavigationDialog('level').then((confirmed) {
+          if (confirmed == true) {
+            levelManager.currentLevelIndex = levelIndex;
+            _initGame();
+            setState(() {});
+          }
+        });
+      } else {
+        levelManager.currentLevelIndex = levelIndex;
+        _initGame();
+        setState(() {});
+      }
     }
   }
 
@@ -314,35 +349,58 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     }
   }
 
-  void _openSettings() {
-    Navigator.push(
+  void _openSettings() async {
+    final shouldUpdate = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const SettingsScreen()),
     );
+
+    // Если были изменения (выбран уровень из leaderboard через настройки)
+    if (shouldUpdate == true) {
+      _syncMaxOpenedLevel();
+      _initGame();
+      setState(() {});
+    } else {
+      _syncMaxOpenedLevel();
+    }
   }
 
-  void _openLeaderboard() {
-    Navigator.push(
+  void _openLeaderboard() async {
+    final shouldUpdate = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const LeaderboardScreen()),
     );
+
+    // Если был выбран уровень из leaderboard, обновляем игру
+    if (shouldUpdate == true) {
+      _syncMaxOpenedLevel();
+      _initGame();
+      setState(() {});
+    } else {
+      // Просто синхронизируем
+      _syncMaxOpenedLevel();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final levelManager = Provider.of<LevelManager>(context);
+    final settings = Provider.of<SettingsManager>(context);
 
     return Scaffold(
       backgroundColor: AppColors.wallLight(context),
       body: OrientationBuilder(
         builder: (context, orientation) {
-          return _buildPortraitLayout(levelManager);
+          return _buildPortraitLayout(levelManager, settings);
         },
       ),
     );
   }
 
-  Widget _buildPortraitLayout(LevelManager levelManager) {
+  Widget _buildPortraitLayout(LevelManager levelManager, SettingsManager settings) {
+    final isNextLevelUnlocked = levelManager.currentLevelIndex + 1 <= settings.maxOpenedLevel;
+    final isLastLevel = levelManager.currentLevelIndex + 1 >= levelManager.totalLevels;
+
     return SafeArea(
       child: Column(
         children: [
@@ -367,11 +425,28 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                       levelNumber: levelManager.currentLevelIndex + 1,
                     ),
                     const SizedBox(width: 16),
-                    GradientButton(
-                      icon: Icons.chevron_right,
-                      onPressed: _nextLevelNavigation,
-                      isEnabled: levelManager.currentLevelIndex + 1 <= levelManager.maxOpenedLevel,
-                    ),
+                    // Кнопка следующего уровня с разными иконками
+                    if (isLastLevel)
+                      // Последний уровень - показываем кубок с переходом к leaderboard
+                      GradientButton(
+                        icon: Icons.emoji_events,
+                        onPressed: _openLeaderboard,
+                        isEnabled: true,
+                      )
+                    else if (isNextLevelUnlocked)
+                      // Уровень пройден - показываем стрелку
+                      GradientButton(
+                        icon: Icons.chevron_right,
+                        onPressed: _nextLevelNavigation,
+                        isEnabled: true,
+                      )
+                    else
+                      // Уровень не пройден - показываем замок
+                      GradientButton(
+                        icon: Icons.lock,
+                        onPressed: _showLevelLockedDialog,
+                        isEnabled: true,
+                      ),
                   ],
                 ),
                 GradientButton(

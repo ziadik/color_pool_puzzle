@@ -80,6 +80,13 @@ class Localization {
   }
 
   static const Map<String, String> _englishStrings = {
+    'developer': 'Developer',
+    'developerName': 'Developer',
+    'website': 'Website',
+    'email': 'Email',
+    'version': 'Version',
+    'build': 'build',
+    'cannotOpenLink': 'Cannot open link',
     'level': 'Level',
     'undo': 'Undo',
     'restart': 'Restart',
@@ -131,6 +138,13 @@ class Localization {
   };
 
   static const Map<String, String> _russianStrings = {
+    'developer': 'Разработчик',
+    'developerName': 'Разработчик',
+    'website': 'Сайт',
+    'email': 'Email',
+    'version': 'Версия',
+    'build': 'сборка',
+    'cannotOpenLink': 'Не удалось открыть ссылку',
     'level': 'Уровень',
     'undo': 'Отменить',
     'restart': 'Заново',
