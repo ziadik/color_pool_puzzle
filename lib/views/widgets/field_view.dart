@@ -58,9 +58,9 @@ class _FieldViewState extends State<FieldView> {
             key: _containerKey,
             width: totalWidth,
             height: totalHeight,
-            decoration: BoxDecoration(
-              color: AppColors.fieldBackground(context),
-            ),
+            // decoration: BoxDecoration(
+            //   color: AppColors.fieldBackground(context),
+            // ),
             child: Listener(
               onPointerDown: (event) {
                 _dragStart = _getRelativePosition(event.localPosition);
@@ -83,6 +83,16 @@ class _FieldViewState extends State<FieldView> {
               },
               child: Stack(
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.all(1.0),
+                    child: Container(
+                      width: totalWidth,
+                      height: totalHeight,
+                      decoration: BoxDecoration(
+                        color: AppColors.fieldBackground(context),
+                      ),
+                    ),
+                  ),
                   // Grid
                   CustomPaint(
                     size: Size(totalWidth, totalHeight),

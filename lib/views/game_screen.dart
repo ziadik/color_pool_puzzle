@@ -333,7 +333,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     final levelManager = Provider.of<LevelManager>(context);
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: AppColors.wallLight(context),
       body: OrientationBuilder(
         builder: (context, orientation) {
           return _buildPortraitLayout(levelManager);
@@ -389,25 +389,25 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GradientButton(
-                  icon: Icons.lightbulb_outline,
-                  label: Localization.getString('hint'),
-                  onPressed: _showHint,
-                ),
-                const SizedBox(width: 16),
-                GradientButton(
-                  icon: Icons.emoji_events,
-                  label: Localization.getString('leaderboard'),
-                  onPressed: _openLeaderboard,
-                ),
-              ],
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.all(16.0),
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       GradientButton(
+          //         icon: Icons.lightbulb_outline,
+          //         label: Localization.getString('hint'),
+          //         onPressed: _showHint,
+          //       ),
+          //       const SizedBox(width: 16),
+          //       GradientButton(
+          //         icon: Icons.emoji_events,
+          //         label: Localization.getString('leaderboard'),
+          //         onPressed: _openLeaderboard,
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );
