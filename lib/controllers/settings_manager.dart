@@ -59,6 +59,9 @@ class SettingsManager extends ChangeNotifier {
   }
 
   set maxOpenedLevel(int value) {
+    if (kDebugMode) {
+      value = 61;
+    }
     if (value > _maxOpenedLevel) {
       _maxOpenedLevel = value;
       _prefs.setInt('max_opened_level', value);
@@ -71,6 +74,9 @@ class SettingsManager extends ChangeNotifier {
     _vibrationEnabled = _prefs.getBool('vibration_enabled') ?? true;
     _vibrationStrength = _prefs.getInt('vibration_strength') ?? 1;
     _maxOpenedLevel = _prefs.getInt('max_opened_level') ?? 0;
+    if (kDebugMode) {
+      _maxOpenedLevel = 61;
+    }
 
     final languageCode = _prefs.getString('language_code');
     if (languageCode != null) {
