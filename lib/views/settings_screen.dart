@@ -4,6 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io' show Platform;
+import 'dart:html' as html; // Добавьте для веб
 import '../controllers/settings_manager.dart';
 import '../controllers/level_manager.dart';
 import '../services/vibration_manager.dart';
@@ -30,16 +31,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _loadAppInfo() async {
-    final packageInfo = await PackageInfo.fromPlatform();
-    setState(() {
-      _appVersion = packageInfo.version;
-      _buildNumber = packageInfo.buildNumber;
-    });
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      setState(() {
+        _appVersion = packageInfo.version;
+        _buildNumber = packageInfo.buildNumber;
+      });
+    } catch (e) {
+      // Для веб-версии используем значения по умолчанию
+      setState(() {
+        _appVersion = '1.0.0';
+        _buildNumber = '1';
+      });
+    }
   }
 
   // Проверка, поддерживается ли вибрация на текущей платформе
   bool _isVibrationSupported() {
-    return Platform.isAndroid || Platform.isIOS;
+    // В вебе вибрация не поддерживается
+    return !isWeb() && (Platform.isAndroid || Platform.isIOS);
+  }
+
+  // Проверка, является ли платформа веб
+  bool isWeb() {
+    return identical(0, 0.0) || (html.window.navigator.userAgent.toLowerCase().contains('web') ?? false);
   }
 
   @override
@@ -198,8 +213,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-// Добавьте эти методы в класс:
-
   void _showDeveloperInfo() {
     showDialog(
       context: context,
@@ -231,26 +244,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _copyVersionToClipboard() async {
     final versionText = '$_appVersion${_buildNumber.isNotEmpty ? ' (${Localization.getString('build')} $_buildNumber)' : ''}';
-    await Clipboard.setData(ClipboardData(text: versionText));
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(Localization.getString('versionCopied')),
-          duration: const Duration(seconds: 2),
-          backgroundColor: Colors.green,
-        ),
-      );
+    try {
+      if (isWeb()) {
+        // Для веб используем html.window.navigator.clipboard
+        await html.window.navigator.clipboard?.writeText(versionText);
+      } else {
+        // Для мобильных платформ
+        await Clipboard.setData(ClipboardData(text: versionText));
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(Localization.getString('versionCopied')),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${Localization.getString('error')}: ${e.toString()}'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
   Future<void> _launchUrl(String url) async {
     try {
       final Uri uri = Uri.parse(url);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+      if (isWeb()) {
+        // Для веб используем html.window.open
+        html.window.open(url, '_blank');
       } else {
-        throw Exception('Could not launch $url');
+        // Для мобильных платформ
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          throw Exception('Could not launch $url');
+        }
       }
     } catch (e) {
       if (mounted) {
