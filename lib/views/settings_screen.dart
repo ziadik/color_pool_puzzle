@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'dart:io' show Platform;
-import 'dart:html' as html; // Добавьте для веб
+// import 'package:url_launcher/url_launcher.dart';
 import '../controllers/settings_manager.dart';
 import '../controllers/level_manager.dart';
 import '../services/vibration_manager.dart';
@@ -38,23 +36,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _buildNumber = packageInfo.buildNumber;
       });
     } catch (e) {
-      // Для веб-версии используем значения по умолчанию
+      // Используем значения по умолчанию
       setState(() {
         _appVersion = '1.0.0';
         _buildNumber = '1';
       });
     }
-  }
-
-  // Проверка, поддерживается ли вибрация на текущей платформе
-  bool _isVibrationSupported() {
-    // В вебе вибрация не поддерживается
-    return !isWeb() && (Platform.isAndroid || Platform.isIOS);
-  }
-
-  // Проверка, является ли платформа веб
-  bool isWeb() {
-    return identical(0, 0.0) || (html.window.navigator.userAgent.toLowerCase().contains('web') ?? false);
   }
 
   @override
@@ -111,37 +98,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
               activeColor: AppColors.secondaryColor,
             ),
           ),
-          // Секция вибрации - показываем только на мобильных устройствах
-          if (_isVibrationSupported())
-            _buildSection(
-              title: Localization.getString('vibration'),
-              children: [
-                SwitchListTile(
-                  title: Text(Localization.getString('vibrationEnabled')),
-                  value: settings.vibrationEnabled,
-                  onChanged: (value) {
-                    settings.vibrationEnabled = value;
-                    if (value) {
-                      _vibrationManager.preview(settings);
-                    }
-                    _applyChanges();
-                  },
-                  activeColor: AppColors.secondaryColor,
+          _buildSection(
+            title: Localization.getString('vibration'),
+            children: [
+              SwitchListTile(
+                title: Text(Localization.getString('vibrationEnabled')),
+                value: settings.vibrationEnabled,
+                onChanged: (value) {
+                  settings.vibrationEnabled = value;
+                  if (value) {
+                    _vibrationManager.preview(settings);
+                  }
+                  _applyChanges();
+                },
+                activeColor: AppColors.secondaryColor,
+              ),
+              ListTile(
+                title: Text(Localization.getString('vibrationStrength')),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(settings.vibrationStrengthDescription()),
+                    const Icon(Icons.chevron_right),
+                  ],
                 ),
-                ListTile(
-                  title: Text(Localization.getString('vibrationStrength')),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(settings.vibrationStrengthDescription()),
-                      const Icon(Icons.chevron_right),
-                    ],
-                  ),
-                  enabled: settings.vibrationEnabled,
-                  onTap: settings.vibrationEnabled ? () => _showStrengthDialog(settings) : null,
-                ),
-              ],
-            ),
+                enabled: settings.vibrationEnabled,
+                onTap: settings.vibrationEnabled
+                    ? () => _showStrengthDialog(settings)
+                    : null,
+              ),
+            ],
+          ),
           _buildSection(
             title: Localization.getString('progress'),
             child: ListTile(
@@ -180,7 +167,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             children: [
               ListTile(
-                leading: const Icon(Icons.person_outline, color: AppColors.secondaryColor),
+                leading: const Icon(Icons.person_outline,
+                    color: AppColors.secondaryColor),
                 title: Text(Localization.getString('developerName')),
                 subtitle: const Text('Dmitry Ziadik'),
                 onTap: () => _showDeveloperInfo(),
@@ -190,20 +178,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 leading: const Icon(Icons.web, color: AppColors.secondaryColor),
                 title: Text(Localization.getString('website')),
                 subtitle: const Text('https://ziidik.ru'),
-                onTap: () => _launchUrl('https://ziidik.ru'),
+                // onTap: () => _launchUrl('https://ziidik.ru'),
               ),
               const Divider(height: 1),
               ListTile(
-                leading: const Icon(Icons.email, color: AppColors.secondaryColor),
+                leading:
+                    const Icon(Icons.email, color: AppColors.secondaryColor),
                 title: Text(Localization.getString('email')),
                 subtitle: const Text('dmitry.zyadik@gmail.com'),
-                onTap: () => _launchUrl('mailto:dmitry.zyadik@gmail.com'),
+                // onTap: () => _launchUrl('mailto:dmitry.zyadik@gmail.com'),
               ),
               const Divider(height: 1),
               ListTile(
-                leading: const Icon(Icons.info_outline, color: AppColors.secondaryColor),
+                leading: const Icon(Icons.info_outline,
+                    color: AppColors.secondaryColor),
                 title: Text(Localization.getString('version')),
-                subtitle: Text('${Localization.getString('version')} $_appVersion${_buildNumber.isNotEmpty ? ' (${Localization.getString('build')} $_buildNumber)' : ''}'),
+                subtitle: Text(
+                    '${Localization.getString('version')} $_appVersion${_buildNumber.isNotEmpty ? ' (${Localization.getString('build')} $_buildNumber)' : ''}'),
                 onTap: () => _copyVersionToClipboard(),
               ),
             ],
@@ -243,16 +234,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _copyVersionToClipboard() async {
-    final versionText = '$_appVersion${_buildNumber.isNotEmpty ? ' (${Localization.getString('build')} $_buildNumber)' : ''}';
+    final versionText =
+        '$_appVersion${_buildNumber.isNotEmpty ? ' (${Localization.getString('build')} $_buildNumber)' : ''}';
 
     try {
-      if (isWeb()) {
-        // Для веб используем html.window.navigator.clipboard
-        await html.window.navigator.clipboard?.writeText(versionText);
-      } else {
-        // Для мобильных платформ
-        await Clipboard.setData(ClipboardData(text: versionText));
-      }
+      await Clipboard.setData(ClipboardData(text: versionText));
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -267,7 +253,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${Localization.getString('error')}: ${e.toString()}'),
+            content:
+                Text('${Localization.getString('error')}: ${e.toString()}'),
             duration: const Duration(seconds: 2),
             backgroundColor: Colors.red,
           ),
@@ -276,33 +263,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Future<void> _launchUrl(String url) async {
-    try {
-      final Uri uri = Uri.parse(url);
-
-      if (isWeb()) {
-        // Для веб используем html.window.open
-        html.window.open(url, '_blank');
-      } else {
-        // Для мобильных платформ
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-        } else {
-          throw Exception('Could not launch $url');
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(Localization.getString('cannotOpenLink')),
-            duration: const Duration(seconds: 2),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
+  // Future<void> _launchUrl(String url) async {
+  //   try {
+  //     final Uri uri = Uri.parse(url);
+  //     if (await canLaunchUrl(uri)) {
+  //       await launchUrl(uri, mode: LaunchMode.externalApplication);
+  //     } else {
+  //       throw Exception('Could not launch $url');
+  //     }
+  //   } catch (e) {
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text(Localization.getString('cannotOpenLink')),
+  //           duration: const Duration(seconds: 2),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+  //   }
+  // }
 
   void _applyChanges() {
     setState(() {});
@@ -393,7 +373,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             ListTile(
               title: Text(Localization.getString('systemTheme')),
-              trailing: settings.currentTheme == ThemeMode.system ? const Icon(Icons.check) : null,
+              trailing: settings.currentTheme == ThemeMode.system
+                  ? const Icon(Icons.check)
+                  : null,
               onTap: () {
                 settings.currentTheme = ThemeMode.system;
                 _applyChanges();
@@ -402,7 +384,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             ListTile(
               title: Text(Localization.getString('lightTheme')),
-              trailing: settings.currentTheme == ThemeMode.light ? const Icon(Icons.check) : null,
+              trailing: settings.currentTheme == ThemeMode.light
+                  ? const Icon(Icons.check)
+                  : null,
               onTap: () {
                 settings.currentTheme = ThemeMode.light;
                 _applyChanges();
@@ -411,7 +395,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             ListTile(
               title: Text(Localization.getString('darkTheme')),
-              trailing: settings.currentTheme == ThemeMode.dark ? const Icon(Icons.check) : null,
+              trailing: settings.currentTheme == ThemeMode.dark
+                  ? const Icon(Icons.check)
+                  : null,
               onTap: () {
                 settings.currentTheme = ThemeMode.dark;
                 _applyChanges();
@@ -434,7 +420,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             ListTile(
               title: Text(Localization.getString('vibrationLight')),
-              trailing: settings.vibrationStrength == 0 ? const Icon(Icons.check) : null,
+              trailing: settings.vibrationStrength == 0
+                  ? const Icon(Icons.check)
+                  : null,
               onTap: () {
                 settings.vibrationStrength = 0;
                 _vibrationManager.preview(settings);
@@ -444,7 +432,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             ListTile(
               title: Text(Localization.getString('vibrationMedium')),
-              trailing: settings.vibrationStrength == 1 ? const Icon(Icons.check) : null,
+              trailing: settings.vibrationStrength == 1
+                  ? const Icon(Icons.check)
+                  : null,
               onTap: () {
                 settings.vibrationStrength = 1;
                 _vibrationManager.preview(settings);
@@ -454,7 +444,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             ListTile(
               title: Text(Localization.getString('vibrationStrong')),
-              trailing: settings.vibrationStrength == 2 ? const Icon(Icons.check) : null,
+              trailing: settings.vibrationStrength == 2
+                  ? const Icon(Icons.check)
+                  : null,
               onTap: () {
                 settings.vibrationStrength = 2;
                 _vibrationManager.preview(settings);
