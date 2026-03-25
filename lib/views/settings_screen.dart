@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-// import 'package:url_launcher/url_launcher.dart';
 import '../controllers/settings_manager.dart';
 import '../controllers/level_manager.dart';
 import '../services/vibration_manager.dart';
@@ -36,7 +35,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _buildNumber = packageInfo.buildNumber;
       });
     } catch (e) {
-      // Используем значения по умолчанию
       setState(() {
         _appVersion = '1.0.0';
         _buildNumber = '1';
@@ -131,13 +129,76 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           _buildSection(
             title: Localization.getString('progress'),
-            child: ListTile(
-              title: Text(Localization.getString('resetResults')),
-              textColor: Colors.red,
-              onTap: () => _showResetDialog(settings),
-            ),
+            children: [
+              ListTile(
+                title: Text(Localization.getString('resetResults')),
+                textColor: Colors.red,
+                onTap: () => _showResetDialog(settings),
+              ),
+              ListTile(
+                title: Text(Localization.getString('unlockAllLevels')),
+                textColor: AppColors.secondaryColor,
+                onTap: () => _showUnlockAllLevelsDialog(settings),
+              ),
+            ],
           ),
           _buildDeveloperSection(),
+        ],
+      ),
+    );
+  }
+
+  void _showUnlockAllLevelsDialog(SettingsManager settings) {
+    final levelManager = Provider.of<LevelManager>(context, listen: false);
+    final totalLevels = levelManager.totalLevels;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(Localization.getString('unlockAllLevels')),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(Localization.getString('unlockAllLevelsConfirm')),
+            const SizedBox(height: 8),
+            Text(
+              Localization.getString('unlockAllLevelsWarning'),
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(Localization.getString('cancel')),
+          ),
+          TextButton(
+            onPressed: () {
+              settings.maxOpenedLevel = totalLevels - 1;
+              levelManager.maxOpenedLevel = totalLevels - 1;
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '${Localization.getString('unlockAllLevels')} (${totalLevels} ${Localization.getString('levels')})',
+                  ),
+                  duration: const Duration(seconds: 2),
+                  backgroundColor: AppColors.successColor,
+                ),
+              );
+
+              Navigator.pop(context);
+              _applyChanges();
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.secondaryColor,
+            ),
+            child: Text(Localization.getString('unlockAllLevels')),
+          ),
         ],
       ),
     );
@@ -178,7 +239,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 leading: const Icon(Icons.web, color: AppColors.secondaryColor),
                 title: Text(Localization.getString('website')),
                 subtitle: const Text('https://ziidik.ru'),
-                // onTap: () => _launchUrl('https://ziidik.ru'),
               ),
               const Divider(height: 1),
               ListTile(
@@ -186,7 +246,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const Icon(Icons.email, color: AppColors.secondaryColor),
                 title: Text(Localization.getString('email')),
                 subtitle: const Text('dmitry.zyadik@gmail.com'),
-                // onTap: () => _launchUrl('mailto:dmitry.zyadik@gmail.com'),
               ),
               const Divider(height: 1),
               ListTile(
@@ -262,27 +321,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     }
   }
-
-  // Future<void> _launchUrl(String url) async {
-  //   try {
-  //     final Uri uri = Uri.parse(url);
-  //     if (await canLaunchUrl(uri)) {
-  //       await launchUrl(uri, mode: LaunchMode.externalApplication);
-  //     } else {
-  //       throw Exception('Could not launch $url');
-  //     }
-  //   } catch (e) {
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text(Localization.getString('cannotOpenLink')),
-  //           duration: const Duration(seconds: 2),
-  //           backgroundColor: Colors.red,
-  //         ),
-  //       );
-  //     }
-  //   }
-  // }
 
   void _applyChanges() {
     setState(() {});

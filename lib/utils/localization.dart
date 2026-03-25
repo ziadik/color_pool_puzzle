@@ -68,18 +68,31 @@ class Localization {
       final mod100 = number % 100;
 
       if (mod10 == 1 && mod100 != 11) {
-        return langStrings['moves_one']?.replaceAll('%d', number.toString()) ?? '$number ход';
-      } else if ((mod10 >= 2 && mod10 <= 4) && !(mod100 >= 12 && mod100 <= 14)) {
-        return langStrings['moves_few']?.replaceAll('%d', number.toString()) ?? '$number хода';
+        return langStrings['moves_one']?.replaceAll('%d', number.toString()) ??
+            '$number ход';
+      } else if ((mod10 >= 2 && mod10 <= 4) &&
+          !(mod100 >= 12 && mod100 <= 14)) {
+        return langStrings['moves_few']?.replaceAll('%d', number.toString()) ??
+            '$number хода';
       } else {
-        return langStrings['moves_many']?.replaceAll('%d', number.toString()) ?? '$number ходов';
+        return langStrings['moves_many']?.replaceAll('%d', number.toString()) ??
+            '$number ходов';
       }
     } else {
-      return number == 1 ? langStrings['moves_one']?.replaceAll('%d', number.toString()) ?? '$number move' : langStrings['moves']?.replaceAll('%d', number.toString()) ?? '$number moves';
+      return number == 1
+          ? langStrings['moves_one']?.replaceAll('%d', number.toString()) ??
+              '$number move'
+          : langStrings['moves']?.replaceAll('%d', number.toString()) ??
+              '$number moves';
     }
   }
 
   static const Map<String, String> _englishStrings = {
+    'unlockAllLevels': 'Unlock All Levels',
+    'unlockAllLevelsConfirm':
+        'Unlock all levels? This will allow you to play any level without completing previous ones.',
+    'unlockAllLevelsWarning':
+        'This is for testing purposes only. You can still reset progress later.',
     'developer': 'Developer',
     'developerName': 'Developer',
     'website': 'Website',
@@ -125,7 +138,8 @@ class Localization {
     'noRecords': 'No records yet',
     'startGame': 'Start Game',
     'unsavedChanges': 'Unsaved Changes',
-    'unsavedChangesNavigation': 'You have unsaved changes on this level. Go to %@ level?',
+    'unsavedChangesNavigation':
+        'You have unsaved changes on this level. Go to %@ level?',
     'unsavedChangesRestart': 'You have unsaved changes. Restart the level?',
     'restartLevel': 'Restart Level',
     'levelLocked': 'Level Locked',
@@ -138,6 +152,11 @@ class Localization {
   };
 
   static const Map<String, String> _russianStrings = {
+    'unlockAllLevels': 'Открыть все уровни',
+    'unlockAllLevelsConfirm':
+        'Открыть все уровни? Это позволит играть на любом уровне без прохождения предыдущих.',
+    'unlockAllLevelsWarning':
+        'Это только для тестирования. Вы всегда можете сбросить прогресс позже.',
     'developer': 'Разработчик',
     'developerName': 'Разработчик',
     'website': 'Сайт',
@@ -183,8 +202,10 @@ class Localization {
     'noRecords': 'Рекордов пока нет',
     'startGame': 'Начать игру',
     'unsavedChanges': 'Несохраненные изменения',
-    'unsavedChangesNavigation': 'У вас есть несохраненные изменения на этом уровне. Перейти на %@ уровень?',
-    'unsavedChangesRestart': 'У вас есть несохраненные изменения. Начать уровень заново?',
+    'unsavedChangesNavigation':
+        'У вас есть несохраненные изменения на этом уровне. Перейти на %@ уровень?',
+    'unsavedChangesRestart':
+        'У вас есть несохраненные изменения. Начать уровень заново?',
     'restartLevel': 'Перезапустить уровень',
     'levelLocked': 'Уровень заблокирован',
     'completePreviousLevels': 'Сначала пройдите предыдущие уровни',
@@ -234,7 +255,8 @@ class Localization {
     'noRecords': 'Рекордів поки немає',
     'startGame': 'Почати гру',
     'unsavedChanges': 'Незбережені зміни',
-    'unsavedChangesNavigation': 'У вас є незбережені зміни на цьому рівні. Перейти на %@ рівень?',
+    'unsavedChangesNavigation':
+        'У вас є незбережені зміни на цьому рівні. Перейти на %@ рівень?',
     'unsavedChangesRestart': 'У вас є незбережені зміни. Почати рівень заново?',
     'restartLevel': 'Перезапустити рівень',
     'levelLocked': 'Рівень заблоковано',
@@ -283,8 +305,10 @@ class Localization {
     'noRecords': 'Әзірге рекордтар жоқ',
     'startGame': 'Ойынды бастау',
     'unsavedChanges': 'Сақталмаған өзгерістер',
-    'unsavedChangesNavigation': 'Осы деңгейде сақталмаған өзгерістер бар. %@ деңгейге өту?',
-    'unsavedChangesRestart': 'Сақталмаған өзгерістер бар. Деңгейді қайта бастау?',
+    'unsavedChangesNavigation':
+        'Осы деңгейде сақталмаған өзгерістер бар. %@ деңгейге өту?',
+    'unsavedChangesRestart':
+        'Сақталмаған өзгерістер бар. Деңгейді қайта бастау?',
     'restartLevel': 'Деңгейді қайта бастау',
     'levelLocked': 'Деңгей бұғатталған',
     'completePreviousLevels': 'Алдымен алдыңғы деңгейлерді өтіңіз',
@@ -334,8 +358,10 @@ class Localization {
     'noRecords': 'Рэкордаў пакуль няма',
     'startGame': 'Пачаць гульню',
     'unsavedChanges': 'Незахаваныя змены',
-    'unsavedChangesNavigation': 'У вас ёсць незахаваныя змены на гэтым узроўні. Перайсці на %@ узровень?',
-    'unsavedChangesRestart': 'У вас ёсць незахаваныя змены. Пачаць узровень занава?',
+    'unsavedChangesNavigation':
+        'У вас ёсць незахаваныя змены на гэтым узроўні. Перайсці на %@ узровень?',
+    'unsavedChangesRestart':
+        'У вас ёсць незахаваныя змены. Пачаць узровень занава?',
     'restartLevel': 'Перазапусціць узровень',
     'levelLocked': 'Узровень заблакіраваны',
     'completePreviousLevels': 'Спачатку пройдзіце папярэднія ўзроўні',

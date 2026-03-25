@@ -44,7 +44,7 @@ class LevelManager extends ChangeNotifier {
 
   Level getCurrentLevel() {
     if (_levels.isEmpty) {
-      print('⚠️ No levels loaded!');
+      // print('⚠️ No levels loaded!');
       return Level(width: 1, height: 1, initialField: [
         [null]
       ]);
@@ -52,10 +52,10 @@ class LevelManager extends ChangeNotifier {
     if (_currentLevelIndex >= _levels.length) {
       _currentLevelIndex = _levels.length - 1;
     }
-    print('📦 Getting level ${_currentLevelIndex + 1}/${_levels.length}');
+    // print('📦 Getting level ${_currentLevelIndex + 1}/${_levels.length}');
     final level = _levels[_currentLevelIndex].copy();
-    print('  Width: ${level.width}, Height: ${level.height}');
-    print('  Balls count: ${level.countBalls()}');
+    // print('  Width: ${level.width}, Height: ${level.height}');
+    // print('  Balls count: ${level.countBalls()}');
     return level;
   }
 
@@ -78,25 +78,27 @@ class LevelManager extends ChangeNotifier {
   }
 
   void _loadAllLevels() {
-    print('🔄 Loading levels...');
+    // print('🔄 Loading levels...');
 
     _levelInfos.addAll(LevelData.parseLevels());
-    print('✅ Loaded ${_levelInfos.length} numeric level definitions');
+    // print('✅ Loaded ${_levelInfos.length} numeric level definitions');
 
-    for (int i = 0; i < LevelMaps.levels.length && i < _levelInfos.length; i++) {
+    for (int i = 0;
+        i < LevelMaps.levels.length && i < _levelInfos.length;
+        i++) {
       final levelInfo = _levelInfos[i];
       final wallsData = LevelMaps.getCleanedLevel(i);
 
       final level = _createLevel(levelInfo, wallsData);
       if (level != null) {
         _levels.add(level);
-        print('✅ Created level ${i + 1}: ${level.width}x${level.height}, ${level.countBalls()} balls');
+        // print('✅ Created level ${i + 1}: ${level.width}x${level.height}, ${level.countBalls()} balls');
       } else {
         print('❌ Failed to create level $i');
       }
     }
 
-    print('✅ Total levels loaded: ${_levels.length}');
+    // print('✅ Total levels loaded: ${_levels.length}');
   }
 
   Level? _createLevel(LevelInfo levelInfo, List<String> wallsData) {
@@ -104,7 +106,8 @@ class LevelManager extends ChangeNotifier {
     final height = wallsData.length;
     if (height == 0) return null;
 
-    final firstLineParts = wallsData[0].split(' ').where((s) => s.isNotEmpty).toList();
+    final firstLineParts =
+        wallsData[0].split(' ').where((s) => s.isNotEmpty).toList();
     final width = firstLineParts.length;
 
     // Create field with walls first, then add items
@@ -122,9 +125,9 @@ class LevelManager extends ChangeNotifier {
           if (item != null) {
             field[row][col] = item;
             if (item is Ball) {
-              print('  🎯 Ball at [$row, $col] color: ${item.color}');
+              // print('  🎯 Ball at [$row, $col] color: ${item.color}');
             } else if (item is Hole) {
-              print('  🕳️ Hole at [$row, $col] color: ${item.color}');
+              // print('  🕳️ Hole at [$row, $col] color: ${item.color}');
             }
           }
         }
