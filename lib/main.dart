@@ -12,6 +12,12 @@ import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final app = await initialApp();
+  runApp(app);
+}
+
+Future<Widget> initialApp() async {
   // Принудительно устанавливаем портретную ориентацию
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -32,26 +38,32 @@ void main() async {
     print('  Max opened level: ${settingsManager.maxOpenedLevel}');
     print('  Records count: ${settingsManager.records.length}');
 
-    runApp(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => settingsManager),
-          ChangeNotifierProvider(create: (_) => levelManager),
-        ],
-        child: const MyApp(),
-      ),
+    return AppMain(
+      child: MyApp(),
+      settingsManager: settingsManager,
+      levelManager: levelManager,
     );
   } catch (e) {
     print('Error initializing app: $e');
     // Fallback - запускаем с настройками по умолчанию
-    runApp(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => SettingsManager(SharedPreferences.getInstance() as SharedPreferences)),
-          ChangeNotifierProvider(create: (_) => LevelManager()),
-        ],
-        child: const MyApp(),
-      ),
+    return AppMain(child: MyApp(), settingsManager: SettingsManager(SharedPreferences.getInstance() as SharedPreferences), levelManager: LevelManager());
+  }
+}
+
+class AppMain extends StatelessWidget {
+  final Widget child;
+  final SettingsManager settingsManager;
+  final LevelManager levelManager;
+  const AppMain({super.key, required this.child, required this.settingsManager, required this.levelManager});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => settingsManager),
+        ChangeNotifierProvider(create: (_) => levelManager),
+      ],
+      child: child,
     );
   }
 }
