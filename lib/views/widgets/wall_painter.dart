@@ -454,3 +454,13 @@ CustomPainter? getWallPainter(WallType type, BuildContext context) {
       return null;
   }
 }
+
+CustomPainter? getBridgeShadowPainter(WallType type, BuildContext context) {
+  switch (type) {
+    case WallType.LB:
+    case WallType.RB:
+      return LeftBridgeShadowPainter(context);
+    default:
+      return null;
+  }
+}

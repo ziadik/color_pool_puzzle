@@ -111,6 +111,11 @@ class _FieldViewState extends State<FieldView> {
                     cols,
                     isBottom: true,
                   ),
+                  ..._buildShadowWalls(
+                    rows,
+                    cols,
+                    isBottom: true,
+                  ),
                   // Balls
                   ..._buildBalls(rows, cols),
                   // Top walls
@@ -119,6 +124,7 @@ class _FieldViewState extends State<FieldView> {
                     cols,
                     isBottom: false,
                   ),
+                  ..._buildHolesTop(rows, cols),
                 ],
               ),
             ),
@@ -266,15 +272,45 @@ class _FieldViewState extends State<FieldView> {
         if (item is Hole) {
           widgets.add(
             Positioned(
-              left: col * _elementSize + _wallOffsetX,
+              left: col * _elementSize + _wallOffsetX + 1,
               top: row * _elementSize + _wallOffsetY,
+              child: SizedBox(
+                width: _elementSize,
+                height: _elementSize,
+                child: CustomPaint(
+                  painter: HoleBottomPainter(
+                    color: item.color!.toColor(),
+                    padding: 0,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+      }
+    }
+
+    return widgets;
+  }
+
+  List<Widget> _buildHolesTop(int rows, int cols) {
+    final widgets = <Widget>[];
+
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < cols; col++) {
+        final item = widget.engine.field[row][col];
+        if (item is Hole) {
+          widgets.add(
+            Positioned(
+              left: col * _elementSize + _wallOffsetX + 1,
+              top: row * _elementSize + (_wallOffsetY / 1.33),
               child: SizedBox(
                 width: _elementSize,
                 height: _elementSize,
                 child: CustomPaint(
                   painter: HolePainter(
                     color: item.color!.toColor(),
-                    padding: 2,
+                    padding: 0,
                   ),
                 ),
               ),
@@ -311,25 +347,73 @@ class _FieldViewState extends State<FieldView> {
         if (!shouldDraw) continue;
 
         final painter = getWallPainter(wallType, context);
-        if (painter == null) continue;
-
-        widgets.add(
-          Positioned(
-            left: col * _elementSize,
-            top: row * _elementSize,
-            child: Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.identity()..scale(wallType.needsFlipX ? -1.0 : 1.0, 1.0),
-              child: SizedBox(
-                width: wallSize,
-                height: wallSize,
-                child: CustomPaint(
-                  painter: painter,
+        if (painter != null) {
+          widgets.add(
+            Positioned(
+              left: col * _elementSize,
+              top: row * _elementSize,
+              child: Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.identity()..scale(wallType.needsFlipX ? -1.0 : 1.0, 1.0),
+                child: SizedBox(
+                  width: wallSize,
+                  height: wallSize,
+                  child: CustomPaint(
+                    painter: painter,
+                  ),
                 ),
               ),
             ),
-          ),
-        );
+          );
+        }
+      }
+    }
+
+    return widgets;
+  }
+
+  List<Widget> _buildShadowWalls(
+    int rows,
+    int cols, {
+    required bool isBottom,
+  }) {
+    final widgets = <Widget>[];
+
+    final levelManager = Provider.of<LevelManager>(context, listen: false);
+    final levelId = levelManager.currentLevelIndex;
+    final cleanedLevel = LevelMaps.getCleanedLevel(levelId);
+    final gameBoard = GameBoard.fromTextLayout(cleanedLevel);
+    if (gameBoard == null) return widgets;
+
+    final wallSize = _elementSize + 4;
+
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < cols; col++) {
+        final wallType = gameBoard.getWallType(col, row);
+        if (wallType == WallType.N) continue;
+
+        // For bottom layer, also draw bridge shadows
+
+        final shadowPainter = getBridgeShadowPainter(wallType, context);
+        if (shadowPainter != null) {
+          widgets.add(
+            Positioned(
+              left: col * _elementSize,
+              top: row * _elementSize,
+              child: Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.identity()..scale(wallType.needsFlipX ? -1.0 : 1.0, 1.0),
+                child: SizedBox(
+                  width: wallSize,
+                  height: wallSize,
+                  child: CustomPaint(
+                    painter: shadowPainter,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
       }
     }
 
@@ -423,13 +507,13 @@ class HolePainter extends CustomPainter {
     );
 
     final paint = Paint()
-      ..color = color.withOpacity(0.3)
+      ..color = color.withOpacity(1)
       ..style = PaintingStyle.fill;
     canvas.drawRRect(RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)), paint);
 
     final strokePaint = Paint()
-      ..color = color
-      ..strokeWidth = 2
+      ..color = Colors.black45
+      ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
     canvas.drawRRect(RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)), strokePaint);
   }
@@ -437,3 +521,92 @@ class HolePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+class HoleBottomPainter extends CustomPainter {
+  final Color color;
+  final double padding;
+
+  HoleBottomPainter({required this.color, required this.padding});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Rect.fromLTWH(
+      padding,
+      padding,
+      size.width - padding * 2,
+      size.height - padding * 2,
+    );
+
+    final paint = Paint()
+      ..color = color.withOpacity(1)
+      ..style = PaintingStyle.fill;
+    canvas.drawRRect(RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)), paint);
+
+    final strokePaint = Paint()
+      ..color = const Color(0xFF645691)
+      ..strokeWidth = .5
+      ..style = PaintingStyle.stroke;
+    canvas.drawRRect(RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)), strokePaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// class HoleBottomPainter extends CustomPainter {
+//   final Color color;
+//   final double padding;
+
+//   HoleBottomPainter({required this.color, required this.padding});
+
+//   @override
+//   void paint(Canvas canvas, Size size) {
+//     final rect = Rect.fromLTWH(
+//       padding,
+//       padding,
+//       size.width - padding * 2,
+//       size.height - padding * 2,
+//     );
+
+//     final paint = Paint()
+//       ..color = color.withOpacity(0.95)
+//       ..style = PaintingStyle.fill;
+//     canvas.drawRRect(RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)), paint);
+
+//     final strokePaint = Paint()
+//       ..color = color
+//       ..strokeWidth = 2
+//       ..style = PaintingStyle.stroke;
+
+//     // Create a path without the top border
+//     final path = Path();
+//     final rrect = RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15));
+
+//     // Add the rounded rectangle path but skip the top part
+//     final radius = rect.width * 0.15;
+
+//     // Start from bottom-left corner and go clockwise
+//     path.moveTo(rect.left, rect.bottom - radius);
+//     // Bottom-left corner
+//     path.quadraticBezierTo(rect.left, rect.bottom, rect.left + radius, rect.bottom);
+//     // Bottom edge
+//     path.lineTo(rect.right - radius, rect.bottom);
+//     // Bottom-right corner
+//     path.quadraticBezierTo(rect.right, rect.bottom, rect.right, rect.bottom - radius);
+//     // Right edge
+//     path.lineTo(rect.right, rect.top + radius);
+//     // Top-right corner
+//     path.quadraticBezierTo(rect.right, rect.top, rect.right - radius, rect.top);
+//     // Top edge - we skip drawing this
+//     path.moveTo(rect.left + radius, rect.top);
+//     // Top-left corner
+//     path.quadraticBezierTo(rect.left, rect.top, rect.left, rect.top + radius);
+//     // Left edge
+//     path.lineTo(rect.left, rect.bottom - radius);
+
+//     canvas.drawPath(path, strokePaint);
+//   }
+
+//   @override
+//   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+// }
