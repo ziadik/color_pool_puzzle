@@ -206,17 +206,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-          child: Text(
-            Localization.getString('developer'),
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-        ),
+        // Padding(
+        //   padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+        //   child: Text(
+        //     Localization.getString('developer'),
+        //     style: TextStyle(
+        //       fontSize: 14,
+        //       fontWeight: FontWeight.w600,
+        //       color: Theme.of(context).colorScheme.primary,
+        //     ),
+        //   ),
+        // ),
         Card(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           elevation: 2,
@@ -257,34 +257,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Future<void> _copyVersionToClipboard() async {
-    final versionText = '$_appVersion${_buildNumber.isNotEmpty ? ' (${Localization.getString('build')} $_buildNumber)' : ''}';
-
-    try {
-      await Clipboard.setData(ClipboardData(text: versionText));
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(Localization.getString('versionCopied')),
-            duration: const Duration(seconds: 2),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${Localization.getString('error')}: ${e.toString()}'),
-            duration: const Duration(seconds: 2),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
   void _applyChanges() {
     setState(() {});
   }
@@ -310,17 +282,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Text(
-            title,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-        ),
+        // Padding(
+        //   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+        //   child: Text(
+        //     title,
+        //     style: TextStyle(
+        //       fontSize: 14,
+        //       fontWeight: FontWeight.w600,
+        //       color: Theme.of(context).colorScheme.primary,
+        //     ),
+        //   ),
+        // ),
         if (child != null) child,
         if (children != null) ...children,
         const Divider(height: 1),

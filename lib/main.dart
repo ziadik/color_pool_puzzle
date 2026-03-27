@@ -149,8 +149,15 @@ class MyApp extends StatelessWidget {
         secondary: AppColors.secondaryColor,
         surface: AppColors.backgroundColorDark,
         error: AppColors.errorColor,
+        onSurface: Colors.white, // цвет текста на поверхности для темной темы
+        onPrimary: Colors.white,
       ),
       fontFamily: 'SFPro',
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(color: Colors.white),
+        bodyMedium: TextStyle(color: Colors.white70),
+        titleLarge: TextStyle(color: Colors.white),
+      ),
       appBarTheme: const AppBarTheme(
         elevation: 0,
         centerTitle: true,

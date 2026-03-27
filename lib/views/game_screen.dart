@@ -263,6 +263,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: Text(Localization.getString('cancel')),
           ),
           TextButton(
