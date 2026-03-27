@@ -125,6 +125,16 @@ class MyApp extends StatelessWidget {
         error: AppColors.errorColor,
       ),
       fontFamily: 'SFPro',
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.blue, // цвет текста для светлой темы
+          disabledForegroundColor: Colors.grey,
+          textStyle: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
+        ),
+      ),
       appBarTheme: const AppBarTheme(
         elevation: 0,
         centerTitle: true,
@@ -153,6 +163,16 @@ class MyApp extends StatelessWidget {
         onPrimary: Colors.white,
       ),
       fontFamily: 'SFPro',
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.lightBlueAccent, // цвет текста для темной темы
+          disabledForegroundColor: Colors.grey,
+          textStyle: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
+        ),
+      ),
       textTheme: const TextTheme(
         bodyLarge: TextStyle(color: Colors.white),
         bodyMedium: TextStyle(color: Colors.white70),
