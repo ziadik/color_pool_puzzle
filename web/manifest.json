@@ -1,12 +1,13 @@
 {
-    "name": "color_pool_puzzle",
-    "short_name": "color_pool_puzzle",
+    "name": "Color Pool Puzzle",
+    "short_name": "Color Pool",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#1a1a2e",
+    "theme_color": "#764ba2",
+    "description": "Ball puzzle game with walls and holes - Play offline!",
     "orientation": "portrait-primary",
+    "scope": "/",
     "prefer_related_applications": false,
     "icons": [
         {

@@ -121,7 +121,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ],
                 ),
                 enabled: settings.vibrationEnabled,
-                onTap: settings.vibrationEnabled ? () => _showStrengthDialog(settings) : null,
+                onTap: settings.vibrationEnabled
+                    ? () => _showStrengthDialog(settings)
+                    : null,
+              ),
+            ],
+          ),
+          _buildSection(
+            title: Localization.getString('appearance'),
+            children: [
+              SwitchListTile(
+                title: Text(Localization.getString('holes3D')),
+                subtitle: Text(
+                  settings.holes3DEnabled
+                      ? Localization.getString('holes3D_3d')
+                      : Localization.getString('holes3D_flat'),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
+                value: settings.holes3DEnabled,
+                onChanged: (value) {
+                  settings.holes3DEnabled = value;
+                  _applyChanges();
+                },
+                activeColor: AppColors.secondaryColor,
               ),
             ],
           ),
@@ -226,7 +248,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             children: [
               ListTile(
-                leading: const Icon(Icons.person_outline, color: AppColors.secondaryColor),
+                leading: const Icon(Icons.person_outline,
+                    color: AppColors.secondaryColor),
                 title: Text(Localization.getString('developerName')),
                 subtitle: const Text('Dmitry Ziadik'),
                 onTap: () {},
@@ -239,15 +262,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const Divider(height: 1),
               ListTile(
-                leading: const Icon(Icons.email, color: AppColors.secondaryColor),
+                leading:
+                    const Icon(Icons.email, color: AppColors.secondaryColor),
                 title: Text(Localization.getString('email')),
                 subtitle: const Text('dmitry.zyadik@gmail.com'),
               ),
               const Divider(height: 1),
               ListTile(
-                leading: const Icon(Icons.info_outline, color: AppColors.secondaryColor),
+                leading: const Icon(Icons.info_outline,
+                    color: AppColors.secondaryColor),
                 title: Text(Localization.getString('version')),
-                subtitle: Text('${Localization.getString('version')} $_appVersion${_buildNumber.isNotEmpty ? ' (${Localization.getString('build')} $_buildNumber)' : ''}'),
+                subtitle: Text(
+                    '${Localization.getString('version')} $_appVersion${_buildNumber.isNotEmpty ? ' (${Localization.getString('build')} $_buildNumber)' : ''}'),
                 onTap: () {},
               ),
             ],
@@ -259,6 +285,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _applyChanges() {
     setState(() {});
+  }
+
+  String _holes3DDescription() {
+    final settings = Provider.of<SettingsManager>(context, listen: false);
+    return settings.holes3DEnabled
+        ? 'Объемные отверстия с тенью'
+        : 'Плоские отверстия (2D)';
   }
 
   Future<void> _openLeaderboard() async {
@@ -346,7 +379,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             ListTile(
               title: Text(Localization.getString('systemTheme')),
-              trailing: settings.currentTheme == ThemeMode.system ? const Icon(Icons.check) : null,
+              trailing: settings.currentTheme == ThemeMode.system
+                  ? const Icon(Icons.check)
+                  : null,
               onTap: () {
                 settings.currentTheme = ThemeMode.system;
                 _applyChanges();
@@ -355,7 +390,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             ListTile(
               title: Text(Localization.getString('lightTheme')),
-              trailing: settings.currentTheme == ThemeMode.light ? const Icon(Icons.check) : null,
+              trailing: settings.currentTheme == ThemeMode.light
+                  ? const Icon(Icons.check)
+                  : null,
               onTap: () {
                 settings.currentTheme = ThemeMode.light;
                 _applyChanges();
@@ -364,7 +401,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             ListTile(
               title: Text(Localization.getString('darkTheme')),
-              trailing: settings.currentTheme == ThemeMode.dark ? const Icon(Icons.check) : null,
+              trailing: settings.currentTheme == ThemeMode.dark
+                  ? const Icon(Icons.check)
+                  : null,
               onTap: () {
                 settings.currentTheme = ThemeMode.dark;
                 _applyChanges();
@@ -387,7 +426,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             ListTile(
               title: Text(Localization.getString('vibrationLight')),
-              trailing: settings.vibrationStrength == 0 ? const Icon(Icons.check) : null,
+              trailing: settings.vibrationStrength == 0
+                  ? const Icon(Icons.check)
+                  : null,
               onTap: () {
                 settings.vibrationStrength = 0;
                 _vibrationManager.preview(settings);
@@ -397,7 +438,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             ListTile(
               title: Text(Localization.getString('vibrationMedium')),
-              trailing: settings.vibrationStrength == 1 ? const Icon(Icons.check) : null,
+              trailing: settings.vibrationStrength == 1
+                  ? const Icon(Icons.check)
+                  : null,
               onTap: () {
                 settings.vibrationStrength = 1;
                 _vibrationManager.preview(settings);
@@ -407,7 +450,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             ListTile(
               title: Text(Localization.getString('vibrationStrong')),
-              trailing: settings.vibrationStrength == 2 ? const Icon(Icons.check) : null,
+              trailing: settings.vibrationStrength == 2
+                  ? const Icon(Icons.check)
+                  : null,
               onTap: () {
                 settings.vibrationStrength = 2;
                 _vibrationManager.preview(settings);

@@ -7,6 +7,7 @@ import '../utils/localization.dart';
 class SettingsManager extends ChangeNotifier {
   final SharedPreferences _prefs;
 
+  bool _holes3DEnabled = true;
   bool _soundEnabled = true;
   bool _vibrationEnabled = true;
   int _vibrationStrength = 1;
@@ -18,6 +19,7 @@ class SettingsManager extends ChangeNotifier {
   SettingsManager(this._prefs);
 
   // Getters
+  bool get holes3DEnabled => _holes3DEnabled;
   bool get soundEnabled => _soundEnabled;
   bool get vibrationEnabled => _vibrationEnabled;
   int get vibrationStrength => _vibrationStrength;
@@ -27,6 +29,12 @@ class SettingsManager extends ChangeNotifier {
   int get maxOpenedLevel => _maxOpenedLevel;
 
   // Setters
+  set holes3DEnabled(bool value) {
+    _holes3DEnabled = value;
+    _prefs.setBool('holes_3d_enabled', value);
+    notifyListeners();
+  }
+
   set soundEnabled(bool value) {
     _soundEnabled = value;
     _prefs.setBool('sound_enabled', value);
@@ -70,6 +78,7 @@ class SettingsManager extends ChangeNotifier {
   }
 
   Future<void> loadSettings() async {
+    _holes3DEnabled = _prefs.getBool('holes_3d_enabled') ?? true;
     _soundEnabled = _prefs.getBool('sound_enabled') ?? true;
     _vibrationEnabled = _prefs.getBool('vibration_enabled') ?? true;
     _vibrationStrength = _prefs.getInt('vibration_strength') ?? 1;
@@ -83,7 +92,10 @@ class SettingsManager extends ChangeNotifier {
       _currentLocale = Locale(languageCode);
     } else {
       final systemLocale = PlatformDispatcher.instance.locale;
-      if (systemLocale.languageCode == 'ru' || systemLocale.languageCode == 'uk' || systemLocale.languageCode == 'kk' || systemLocale.languageCode == 'be') {
+      if (systemLocale.languageCode == 'ru' ||
+          systemLocale.languageCode == 'uk' ||
+          systemLocale.languageCode == 'kk' ||
+          systemLocale.languageCode == 'be') {
         _currentLocale = Locale(systemLocale.languageCode);
       } else {
         _currentLocale = const Locale('en');
@@ -113,7 +125,8 @@ class SettingsManager extends ChangeNotifier {
         decoded.forEach((key, value) {
           final levelIndex = int.parse(key);
           _records[levelIndex] = LevelRecord.fromJson(value);
-          print('📖 Loaded level $levelIndex: ${_records[levelIndex]!.moves} moves');
+          print(
+              '📖 Loaded level $levelIndex: ${_records[levelIndex]!.moves} moves');
         });
       } catch (e) {
         print('❌ Error loading records: $e');

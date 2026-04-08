@@ -19,49 +19,71 @@ class AppColors {
 
   // Wall colors - these need to be accessed with BuildContext
   static Color wallLight(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? const Color(0xFF413C50) : const Color(0xFFF8F4FF);
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF413C50)
+        : const Color(0xFFF8F4FF);
   }
 
   static Color wallAccent(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? const Color(0xFFA69DD4) : const Color(0xFF8889B6);
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFFA69DD4)
+        : const Color(0xFF8889B6);
   }
 
   static Color wallShadow(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.15) : Colors.black.withOpacity(0.2);
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.white.withOpacity(0.15)
+        : Colors.black.withOpacity(0.2);
   }
 
   // Field background
   static Color fieldBackground(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2D234B) : const Color(0xFF50427D);
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF2D234B)
+        : const Color(0xFF50427D);
   }
 
   // Grid color
   static Color gridColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? const Color(0xFF645691).withOpacity(0.3) : const Color(0xFF3B2D68).withOpacity(0.4);
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF645691).withOpacity(0.6)
+        : const Color(0xFF3B2D68).withOpacity(0.6);
   }
 
   // Alert colors
   static Color alertTitleColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? Colors.white : primaryColor;
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : primaryColor;
   }
 
   static Color alertMessageColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? Colors.white : primaryColor.withOpacity(0.8);
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : primaryColor.withOpacity(0.8);
   }
 
   static Color alertBackgroundColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2D2341) : backgroundColor;
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF2D2341)
+        : backgroundColor;
   }
 
   static Color alertSuccessActionColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? successColor : secondaryColor;
+    return Theme.of(context).brightness == Brightness.dark
+        ? successColor
+        : secondaryColor;
   }
 
   static Color alertCancelActionColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? Colors.white70 : primaryColor.withOpacity(0.6);
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.white70
+        : primaryColor.withOpacity(0.6);
   }
 
   static Color alertDestructiveActionColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? Colors.redAccent : errorColor;
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.redAccent
+        : errorColor;
   }
 }

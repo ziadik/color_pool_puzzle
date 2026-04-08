@@ -88,6 +88,10 @@ class Localization {
   }
 
   static const Map<String, String> _englishStrings = {
+    'holes3D': '3D Holes',
+    'holes3D_flat': 'Flat (2D)',
+    'holes3D_3d': '3D with shadow',
+    'appearance': 'Appearance',
     'unlockAllLevels': 'Unlock All Levels',
     'unlockAllLevelsConfirm':
         'Unlock all levels? This will allow you to play any level without completing previous ones.',
@@ -152,6 +156,10 @@ class Localization {
   };
 
   static const Map<String, String> _russianStrings = {
+    'holes3D': 'Объемные отверстия',
+    'holes3D_flat': 'Плоские (2D)',
+    'holes3D_3d': 'Объемные с тенью',
+    'appearance': 'Внешний вид',
     'unlockAllLevels': 'Открыть все уровни',
     'unlockAllLevelsConfirm':
         'Открыть все уровни? Это позволит играть на любом уровне без прохождения предыдущих.',
@@ -217,6 +225,10 @@ class Localization {
   };
 
   static const Map<String, String> _ukrainianStrings = {
+    'holes3D': "Об'ємні отвори",
+    'holes3D_flat': 'Плоскі (2D)',
+    'holes3D_3d': "Об'ємні з тінню",
+    'appearance': 'Зовнішній вигляд',
     'level': 'Рівень',
     'undo': 'Скасувати',
     'restart': 'Спочатку',
@@ -269,6 +281,10 @@ class Localization {
   };
 
   static const Map<String, String> _kazakhStrings = {
+    'holes3D': 'Көлемді тесіктер',
+    'holes3D_flat': 'Жазық (2D)',
+    'holes3D_3d': 'Көлемді көлеңкемен',
+    'appearance': 'Сыртқы түрі',
     'level': 'Деңгей',
     'undo': 'Болдырмау',
     'restart': 'Қайта бастау',
@@ -320,6 +336,10 @@ class Localization {
   };
 
   static const Map<String, String> _belarusianStrings = {
+    'holes3D': "Аб'язныя адтуліны",
+    'holes3D_flat': 'Плоскія (2D)',
+    'holes3D_3d': "Аб'язныя з ценем",
+    'appearance': 'Знешні выгляд',
     'level': 'Узровень',
     'undo': 'Адмяніць',
     'restart': 'Занава',

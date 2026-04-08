@@ -4,16 +4,16 @@ import '../../utils/localization.dart';
 
 class LevelLabel extends StatelessWidget {
   final int levelNumber;
-  
+
   const LevelLabel({
     super.key,
     required this.levelNumber,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 120,
+      width: 140,
       height: 48,
       decoration: BoxDecoration(
         gradient: const LinearGradient(

@@ -1,4 +1,5 @@
 import 'package:color_pool_puzzle/controllers/level_manager.dart';
+import 'package:color_pool_puzzle/controllers/settings_manager.dart';
 import 'package:color_pool_puzzle/models/game_board.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -136,7 +137,8 @@ class _FieldViewState extends State<FieldView> {
 
   Offset _getRelativePosition(Offset localPosition) {
     // Получаем позицию контейнера
-    final RenderBox? renderBox = _containerKey.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? renderBox =
+        _containerKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return localPosition;
 
     return Offset(
@@ -156,7 +158,10 @@ class _FieldViewState extends State<FieldView> {
     final adjustedY = position.dy - _wallOffsetY;
 
     // Проверяем, что позиция внутри поля
-    if (adjustedX < 0 || adjustedX > _elementSize * cols || adjustedY < 0 || adjustedY > _elementSize * rows) {
+    if (adjustedX < 0 ||
+        adjustedX > _elementSize * cols ||
+        adjustedY < 0 ||
+        adjustedY > _elementSize * rows) {
       return null;
     }
 
@@ -203,7 +208,8 @@ class _FieldViewState extends State<FieldView> {
 
     print('=== Swipe Debug ===');
     print('Start: $start, End: $end');
-    print('Adjusted start: (${start.dx - _wallOffsetX}, ${start.dy - _wallOffsetY})');
+    print(
+        'Adjusted start: (${start.dx - _wallOffsetX}, ${start.dy - _wallOffsetY})');
     print('Direction: $direction');
     print('Cell: ($col, $row)');
     print('Element size: $_elementSize');
@@ -264,28 +270,47 @@ class _FieldViewState extends State<FieldView> {
   }
 
   List<Widget> _buildHoles(int rows, int cols) {
+    final settings = Provider.of<SettingsManager>(context, listen: false);
     final widgets = <Widget>[];
 
     for (int row = 0; row < rows; row++) {
       for (int col = 0; col < cols; col++) {
         final item = widget.engine.field[row][col];
         if (item is Hole) {
-          widgets.add(
-            Positioned(
-              left: col * _elementSize + _wallOffsetX + 1,
-              top: row * _elementSize + _wallOffsetY,
-              child: SizedBox(
-                width: _elementSize,
-                height: _elementSize,
-                child: CustomPaint(
-                  painter: HoleBottomPainter(
-                    color: item.color!.toColor(),
-                    padding: 0,
+          if (settings.holes3DEnabled) {
+            // Объемные отверстия - нижняя часть
+            widgets.add(
+              Positioned(
+                left: col * _elementSize + _wallOffsetX + 1,
+                top: row * _elementSize + _wallOffsetY,
+                child: SizedBox(
+                  width: _elementSize,
+                  height: _elementSize,
+                  child: CustomPaint(
+                    painter: HoleBottomPainter(
+                      color: item.color!.toColor(),
+                      padding: 0,
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
+            );
+          } else {
+            widgets.add(
+              Positioned(
+                left: col * _elementSize + _wallOffsetX,
+                top: row * _elementSize + _wallOffsetY,
+                child: SizedBox(
+                  width: _elementSize,
+                  height: _elementSize,
+                  child: CustomPaint(
+                    painter: HolePainter(
+                        color: item.color!.toColor(), padding: 3, isFlat: true),
+                  ),
+                ),
+              ),
+            );
+          }
         }
       }
     }
@@ -294,7 +319,11 @@ class _FieldViewState extends State<FieldView> {
   }
 
   List<Widget> _buildHolesTop(int rows, int cols) {
+    final settings = Provider.of<SettingsManager>(context, listen: false);
     final widgets = <Widget>[];
+
+    // Только для объемных отверстий добавляем верхнюю часть
+    if (!settings.holes3DEnabled) return widgets;
 
     for (int row = 0; row < rows; row++) {
       for (int col = 0; col < cols; col++) {
@@ -343,7 +372,8 @@ class _FieldViewState extends State<FieldView> {
         final wallType = gameBoard.getWallType(col, row);
         if (wallType == WallType.N) continue;
 
-        final shouldDraw = isBottom ? wallType.isFirstLayer : wallType.isSecondLayer;
+        final shouldDraw =
+            isBottom ? wallType.isFirstLayer : wallType.isSecondLayer;
         if (!shouldDraw) continue;
 
         final painter = getWallPainter(wallType, context);
@@ -354,7 +384,8 @@ class _FieldViewState extends State<FieldView> {
               top: row * _elementSize,
               child: Transform(
                 alignment: Alignment.center,
-                transform: Matrix4.identity()..scale(wallType.needsFlipX ? -1.0 : 1.0, 1.0),
+                transform: Matrix4.identity()
+                  ..scale(wallType.needsFlipX ? -1.0 : 1.0, 1.0),
                 child: SizedBox(
                   width: wallSize,
                   height: wallSize,
@@ -402,7 +433,8 @@ class _FieldViewState extends State<FieldView> {
               top: row * _elementSize,
               child: Transform(
                 alignment: Alignment.center,
-                transform: Matrix4.identity()..scale(wallType.needsFlipX ? -1.0 : 1.0, 1.0),
+                transform: Matrix4.identity()
+                  ..scale(wallType.needsFlipX ? -1.0 : 1.0, 1.0),
                 child: SizedBox(
                   width: wallSize,
                   height: wallSize,
@@ -494,8 +526,9 @@ class BallPainter extends CustomPainter {
 class HolePainter extends CustomPainter {
   final Color color;
   final double padding;
-
-  HolePainter({required this.color, required this.padding});
+  final bool isFlat;
+  HolePainter(
+      {required this.color, required this.padding, this.isFlat = false});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -506,16 +539,37 @@ class HolePainter extends CustomPainter {
       size.height - padding * 2,
     );
 
-    final paint = Paint()
-      ..color = color.withOpacity(1)
-      ..style = PaintingStyle.fill;
-    canvas.drawRRect(RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)), paint);
+    if (isFlat) {
+      final paint = Paint()
+        ..color = color.withOpacity(0.3)
+        ..style = PaintingStyle.fill;
+      canvas.drawRRect(
+          RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)),
+          paint);
 
-    final strokePaint = Paint()
-      ..color = Colors.black45
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
-    canvas.drawRRect(RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)), strokePaint);
+      final strokePaint = Paint()
+        ..color = color
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke;
+      canvas.drawRRect(
+          RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)),
+          strokePaint);
+    } else {
+      final paint = Paint()
+        ..color = color.withOpacity(1)
+        ..style = PaintingStyle.fill;
+      canvas.drawRRect(
+          RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)),
+          paint);
+
+      final strokePaint = Paint()
+        ..color = Colors.black45
+        ..strokeWidth = 1
+        ..style = PaintingStyle.stroke;
+      canvas.drawRRect(
+          RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)),
+          strokePaint);
+    }
   }
 
   @override
@@ -540,13 +594,17 @@ class HoleBottomPainter extends CustomPainter {
     final paint = Paint()
       ..color = color.withOpacity(1)
       ..style = PaintingStyle.fill;
-    canvas.drawRRect(RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)), paint);
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)),
+        paint);
 
     final strokePaint = Paint()
       ..color = const Color(0xFF645691)
       ..strokeWidth = .5
       ..style = PaintingStyle.stroke;
-    canvas.drawRRect(RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)), strokePaint);
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, Radius.circular(rect.width * 0.15)),
+        strokePaint);
   }
 
   @override
