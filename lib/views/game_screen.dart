@@ -76,7 +76,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     try {
       final levelManager = Provider.of<LevelManager>(context, listen: false);
       final level = levelManager.getCurrentLevel();
-      print('🎮 Initializing game with level ${levelManager.currentLevelIndex + 1}');
+      print(
+          '🎮 Initializing game with level ${levelManager.currentLevelIndex + 1}');
       print('  Width: ${level.width}, Height: ${level.height}');
       print('  Balls count: ${level.countBalls()}');
       _engine = FieldEngine(level: level);
@@ -125,10 +126,13 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     print('🏆 Level completed!');
     print('  Level index: ${levelManager.currentLevelIndex}');
     print('  Moves: ${_engine.movesCount}');
-    print('  Current maxOpenedLevel in SettingsManager: ${settings.maxOpenedLevel}');
-    print('  Current maxOpenedLevel in LevelManager: ${levelManager.maxOpenedLevel}');
+    print(
+        '  Current maxOpenedLevel in SettingsManager: ${settings.maxOpenedLevel}');
+    print(
+        '  Current maxOpenedLevel in LevelManager: ${levelManager.maxOpenedLevel}');
 
-    await settings.saveRecord(levelManager.currentLevelIndex, _engine.movesCount);
+    await settings.saveRecord(
+        levelManager.currentLevelIndex, _engine.movesCount);
 
     // Обновляем maxOpenedLevel
     final nextLevelIndex = levelManager.currentLevelIndex + 1;
@@ -139,8 +143,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     }
 
     // Проверяем после обновления
-    print('  After update - SettingsManager maxOpenedLevel: ${settings.maxOpenedLevel}');
-    print('  After update - LevelManager maxOpenedLevel: ${levelManager.maxOpenedLevel}');
+    print(
+        '  After update - SettingsManager maxOpenedLevel: ${settings.maxOpenedLevel}');
+    print(
+        '  After update - LevelManager maxOpenedLevel: ${levelManager.maxOpenedLevel}');
 
     showDialog(
       context: context,
@@ -151,7 +157,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(Localization.plural('moves', _engine.movesCount)),
-            if (levelManager.currentLevelIndex + 1 >= levelManager.totalLevels) Text(Localization.getString('allLevelsPassed')),
+            if (levelManager.currentLevelIndex + 1 >= levelManager.totalLevels)
+              Text(Localization.getString('allLevelsPassed')),
           ],
         ),
         actions: [
@@ -237,7 +244,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     final settings = Provider.of<SettingsManager>(context, listen: false);
 
     // Проверяем, доступен ли уровень
-    if (levelIndex <= settings.maxOpenedLevel && levelIndex < levelManager.totalLevels) {
+    if (levelIndex <= settings.maxOpenedLevel &&
+        levelIndex < levelManager.totalLevels) {
       if (_hasUnsavedChanges) {
         _showNavigationDialog('level').then((confirmed) {
           if (confirmed == true) {
@@ -259,7 +267,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(Localization.getString('unsavedChanges')),
-        content: Text(Localization.getString('unsavedChangesNavigation').replaceAll('%@', Localization.getString(direction))),
+        content: Text(Localization.getString('unsavedChangesNavigation')
+            .replaceAll('%@', Localization.getString(direction))),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -398,9 +407,12 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildPortraitLayout(LevelManager levelManager, SettingsManager settings) {
-    final isNextLevelUnlocked = levelManager.currentLevelIndex + 1 <= settings.maxOpenedLevel;
-    final isLastLevel = levelManager.currentLevelIndex + 1 >= levelManager.totalLevels;
+  Widget _buildPortraitLayout(
+      LevelManager levelManager, SettingsManager settings) {
+    final isNextLevelUnlocked =
+        levelManager.currentLevelIndex + 1 <= settings.maxOpenedLevel;
+    final isLastLevel =
+        levelManager.currentLevelIndex + 1 >= levelManager.totalLevels;
 
     return SafeArea(
       child: Column(
@@ -421,11 +433,11 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                       onPressed: _previousLevel,
                       isEnabled: levelManager.currentLevelIndex > 0,
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 8),
                     LevelLabel(
                       levelNumber: levelManager.currentLevelIndex + 1,
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 8),
                     // Кнопка следующего уровня с разными иконками
                     if (isLastLevel)
                       // Последний уровень - показываем кубок с переходом к leaderboard

@@ -305,7 +305,9 @@ class _FieldViewState extends State<FieldView> {
                   height: _elementSize,
                   child: CustomPaint(
                     painter: HolePainter(
-                        color: item.color!.toColor(), padding: 3, isFlat: true),
+                        color: item.color!.toColor(),
+                        padding: 2.7,
+                        isFlat: true),
                   ),
                 ),
               ),
@@ -472,7 +474,7 @@ class GridPainter extends CustomPainter {
     final wallOffsetY = cellSize / 1.44;
     final paint = Paint()
       ..color = gridColor
-      ..strokeWidth = 3
+      ..strokeWidth = 2.5
       ..style = PaintingStyle.stroke;
 
     for (int i = 0; i < cols; i++) {
