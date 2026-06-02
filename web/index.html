@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head> 
+  <!-- Оставляем $FLUTTER_BASE_HREF, при сборке с --base-href "./" он станет "./" -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
@@ -20,33 +21,24 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
- <script>
-  // Register Service Worker for offline PWA
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/sw.js').then(function(registration) {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-      }, function(err) {
-        console.log('ServiceWorker registration failed: ', err);
-      });
-    });
-  }
+  <!-- Полифил для буфера обмена (ваш рабочий код, оставляем) -->
+  <script>
+    if (!navigator.clipboard) {
+      navigator.clipboard = {
+        writeText: function(text) {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          document.body.appendChild(textarea);
+          textarea.select();
+          const success = document.execCommand('copy');
+          document.body.removeChild(textarea);
+          return Promise.resolve(success);
+        }
+      };
+    }
+  </script>
 
-  // For clipboard API (your existing code)
-  if (!navigator.clipboard) {
-    navigator.clipboard = {
-      writeText: function(text) {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        const success = document.execCommand('copy');
-        document.body.removeChild(textarea);
-        return Promise.resolve(success);
-      }
-    };
-  }
-</script>
+  <!-- Современная загрузка Flutter (оставляем как есть) -->
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

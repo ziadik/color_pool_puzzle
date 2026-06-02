@@ -124,7 +124,7 @@ class MyApp extends StatelessWidget {
         surface: AppColors.backgroundColor,
         error: AppColors.errorColor,
       ),
-      fontFamily: 'SFPro',
+      fontFamily: 'Roboto',
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: Colors.blue, // цвет текста для светлой темы
@@ -162,7 +162,7 @@ class MyApp extends StatelessWidget {
         onSurface: Colors.white, // цвет текста на поверхности для темной темы
         onPrimary: Colors.white,
       ),
-      fontFamily: 'SFPro',
+      fontFamily: 'Roboto',
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: Colors.lightBlueAccent, // цвет текста для темной темы
