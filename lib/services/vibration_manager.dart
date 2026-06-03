@@ -7,7 +7,7 @@ class VibrationManager {
   factory VibrationManager() => _instance;
   VibrationManager._internal();
 
-  Future<bool> get isSupported => Vibration.hasVibrator();
+  Future<bool?> get isSupported => Vibration.hasVibrator();
 
   void lightImpact(SettingsManager settings) {
     if (!settings.vibrationEnabled) return;
@@ -36,7 +36,7 @@ class VibrationManager {
 
   void _vibrate(int strength, int duration) async {
     final hasVibrator = await Vibration.hasVibrator();
-    if (!hasVibrator) return;
+    if (!hasVibrator!) return;
 
     final adjustedDuration = (duration * (strength + 1) / 3).round();
     await Vibration.vibrate(duration: adjustedDuration);

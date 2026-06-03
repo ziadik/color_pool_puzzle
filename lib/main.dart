@@ -142,11 +142,11 @@ class MyApp extends StatelessWidget {
         foregroundColor: Colors.white,
       ),
       scaffoldBackgroundColor: AppColors.backgroundColor,
-      dialogTheme: const DialogThemeData(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-        ),
-      ),
+      // dialogTheme: const DialogThemeData(
+      //   shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.all(Radius.circular(20)),
+      //   ),
+      // ),
     );
   }
 
@@ -185,11 +185,11 @@ class MyApp extends StatelessWidget {
         foregroundColor: Colors.white,
       ),
       scaffoldBackgroundColor: AppColors.backgroundColorDark,
-      dialogTheme: const DialogThemeData(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-        ),
-      ),
+      // dialogTheme: const DialogThemeData(
+      //   shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.all(Radius.circular(20)),
+      //   ),
+      // ),
     );
   }
 }

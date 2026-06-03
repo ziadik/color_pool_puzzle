@@ -3,18 +3,17 @@ description: Ball puzzle game with walls and holes
 version: 1.0.0
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ">=3.0.0 <4.0.0" # Для Flutter 3.19.6 лучше ограничить верхнюю границу: ">=3.0.0 <3.20.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^2.5.4
-  audioplayers: ^6.6.0
-  vibration: ^3.1.8
-  provider: ^6.1.5+1
-  intl: ^0.20.2
-  package_info_plus: ^9.0.0
-  # url_launcher: ^6.3.2
+  shared_preferences: ^2.2.2 # Версия 2.5.4 может требовать новый SDK, для 3.19.6 лучше 2.2.x
+  audioplayers: ^5.2.1       # Версия 6.x может иметь проблемы на старом web, 5.x стабильнее
+  vibration: ^1.8.4          # Проверьте совместимость, для web часто нужны полифилы
+  provider: ^6.1.2
+  intl: ^0.18.1              # Совместимо с SDK 3.0-3.19
+  package_info_plus: ^5.0.1  # Совместимо с SDK 3.0-3.19
   flutter_localizations:
     sdk: flutter
 
@@ -28,10 +27,11 @@ flutter:
 
   assets:
     - assets/sounds/
-    # - assets/images/
+    - assets/fonts/Roboto/ # <-- Добавляем папку шрифтов в assets
+
   fonts:
-      - family: Roboto
-        fonts:
+    - family: Roboto
+      fonts:
         - asset: assets/fonts/Roboto/Roboto-Light.ttf
           weight: 300
         - asset: assets/fonts/Roboto/Roboto-Regular.ttf
@@ -43,9 +43,3 @@ flutter:
           weight: 500
         - asset: assets/fonts/Roboto/Roboto-Bold.ttf
           weight: 700
-  # fonts:
-  #   - family: SFPro
-  #     fonts:
-  #       - asset: assets/fonts/SF-Pro-Text-Regular.ttf
-  #       - asset: assets/fonts/SF-Pro-Text-Bold.ttf
-  #         weight: 700

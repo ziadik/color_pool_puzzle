@@ -1,44 +1,31 @@
 <!DOCTYPE html>
 <html>
-<head> 
-  <!-- Оставляем $FLUTTER_BASE_HREF, при сборке с --base-href "./" он станет "./" -->
+<head>
   <base href="$FLUTTER_BASE_HREF">
-
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Color Pool Puzzle Offline">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="color_pool_puzzle">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico"/>
-
-  <title>color_pool_puzzle</title>
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <title>Color Pool Puzzle</title>
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <!-- Полифил для буфера обмена (ваш рабочий код, оставляем) -->
+  <script src="flutter.js" defer></script>
   <script>
-    if (!navigator.clipboard) {
-      navigator.clipboard = {
-        writeText: function(text) {
-          const textarea = document.createElement('textarea');
-          textarea.value = text;
-          document.body.appendChild(textarea);
-          textarea.select();
-          const success = document.execCommand('copy');
-          document.body.removeChild(textarea);
-          return Promise.resolve(success);
+    window.addEventListener('load', function(ev) {
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: null, // Критически важно для Electron (file://)
+        onEntrypointLoaded: function(engineInitializer) {
+          engineInitializer.initializeEngine().then(function(appRunner) {
+            appRunner.runApp();
+          });
         }
-      };
-    }
+      });
+    });
   </script>
-
-  <!-- Современная загрузка Flutter (оставляем как есть) -->
-  <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
