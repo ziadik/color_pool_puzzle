@@ -1,0 +1,35 @@
+{
+  "name": "color_pool_puzzle",
+  "version": "1.0.0",
+  "description": "Ball puzzle game with walls and holes",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^22.3.27",
+    "electron-builder": "^24.0.0"
+  },
+  "build": {
+    "appId": "com.yourcompany.colorpoolpuzzle",
+    "productName": "Color Pool Puzzle",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "icon.ico",
+      "app/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64", "ia32"]
+        }
+      ],
+      "icon": "icon.ico"
+    }
+  }
+}
